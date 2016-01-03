@@ -1,0 +1,12 @@
+{% load staticfiles %}
+
+<h1>"Choose a pokemon"</h1>
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'predictor:search' %}" method="post">
+    {% csrf_token %}
+ <input type="text" name="mytextbox" size="20"/>
+ <input type="submit" class="btn" value="Click" name="mybtn">
+</form>
