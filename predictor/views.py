@@ -12,7 +12,7 @@ def search(request):
     try:
         search_id = request.POST['mytextbox']
     except KeyError:
-        print "Pokemon not found"
+        print("Pokemon not found")
         return render(request, 'predictor/index.html')
     return HttpResponseRedirect(reverse('predictor:results', args=(search_id,)))
 

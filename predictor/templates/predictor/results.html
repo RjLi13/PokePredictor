@@ -6,16 +6,16 @@
     {% for key, value in poke_info.items %}
       <li>{{key}}</li>
         <ul>
-        {% if key == 'moves' or key == 'evs' %}
-            {% for v in value %}
-                <li>{{v}}</li>
-                {% if key == 'evs'%}
-                    <ul>
-                    {% for stat, stat_value in value.items %}
-                        <li>{{ stat_value }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
+        {% if key == 'moves' %}
+            {% for move in value %}
+                <li>{{move}}</li>
+            {% endfor %}
+        {% elif key == 'evs'%}
+            {% for stat, stat_value in value.items %}
+                <li>{{ stat }}</li>
+                <ul>
+                    <li>{{ stat_value }}</li>
+                </ul>
             {% endfor %}
         {% else %}
             <li>{{value}}</li>
