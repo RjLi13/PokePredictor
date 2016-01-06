@@ -4,67 +4,13 @@
 #         HP bars go down after Attacks
 #         simple text display
 #         testing for tackle
-#     Pending
 #         When is something supereffective????
+#     Pending
 #         crits?
 #         rand factor?
 #         testing of more attacks... more pokemon....
 
-import random
-
-# def createTypeDict():
-#     type_dict = {}
-#     type_dict['normal'] = 0
-#     type_dict['fire'] = 1
-#     type_dict['water'] = 2
-#     type_dict['electric'] = 3
-#     type_dict['grass'] = 4
-#     type_dict['ice'] = 5
-#     type_dict['fighting'] = 6
-#     type_dict['poison'] = 7
-#     type_dict['ground'] = 8
-#     type_dict['flying'] = 9
-#     type_dict['psychic'] = 10
-#     type_dict['bug'] = 11
-#     type_dict['rock'] = 12
-#     type_dict['ghost'] = 13
-#     type_dict['dragon'] = 14
-#     type_dict['dark'] = 15
-#     type_dict['steel'] = 16
-#     type_dict['fairy'] = 17
-#     return type_dict
-#
-#
-# def instantiateMatrix():
-#     """
-#     look up effectiveness in a large matrix
-#            each value in the matrix is stored as 0, 0.5, 1, or 2
-#            see http://pokemondb.net/type
-#     """
-#     type_dict = createTypeDict()
-#     type_matrix = [[1 for _ in range(18)] for _ in range(18)]
-#     type_matrix[type_dict['normal']][type_dict['fighting']] = 2
-#     type_matrix[type_dict['normal']][type_dict['ghost']] = 0
-#     type_matrix[type_dict['fire']][type_dict['fire']] = 0.5
-#     type_matrix[type_dict['fire']][type_dict['water']] = 2
-#     type_matrix[type_dict['fire']][type_dict['grass']] = 0.5
-#     type_matrix[type_dict['fire']][type_dict['ice']] = 0.5
-#     type_matrix[type_dict['fire']][type_dict['ground']] = 2
-#     type_matrix[type_dict['fire']][type_dict['bug']] = 0.5
-#     type_matrix[type_dict['fire']][type_dict['rock']] = 2
-#     type_matrix[type_dict['fire']][type_dict['steel']] = 0.5
-#     type_matrix[type_dict['fire']][type_dict['fairy']] = 0.5
-#     type_matrix[type_dict['water']][type_dict['fire']] = 0.5
-#     type_matrix[type_dict['water']][type_dict['fire']] = 0.5
-#     type_matrix[type_dict['water']][type_dict['water']] = 0.5
-#     type_matrix[type_dict['water']][type_dict['grass']] = 2
-#     type_matrix[type_dict['water']][type_dict['ice']] = 0.5
-#     type_matrix[type_dict['water']][type_dict['steel']] = 0.5
-#     type_matrix[type_dict['electric']][type_dict['electric']] = 0.5
-#     type_matrix[type_dict['electric']][type_dict['ground']] = 2
-#     type_matrix[type_dict['electric']][type_dict['electric']] = 0.5
-
-
+from pokemon import *
 
 class Attack:
     def __init__(self, att_poke, def_poke, move):
@@ -77,9 +23,58 @@ class Attack:
         return self.att_poke.name + " used " + self.move.name + " on " + self.def_poke.name + "!"
 
     def find_effectiveness(self):
-        """The type matrix is [defender][attacker]
-           """
-        return 1
+        """look up effectiveness in a large matrix
+           each value in the matrix is stored as 0, 1/2, 1, or 2
+           see http://pokemondb.net/type
+         """
+        typedict = {}
+        typedict["Normal"] = 0
+        typedict["Fire"] = 1
+        typedict["Water"] = 2
+        typedict["Electric"] = 3
+        typedict["Grass"] = 4
+        typedict["Ice"] = 5
+        typedict["Fighting"] = 6
+        typedict["Poison"] = 7
+        typedict["Ground"] = 8
+        typedict["Flying"] = 9 
+        typedict["Physics"] = 10
+        typedict["Bug"] = 11
+        typedict["Rock"] = 12
+        typedict["Ghost"] = 13
+        typedict["Dragon"] = 14
+        typedict["Dark"] = 15
+        typedict["Steel"] = 16
+        typedict["Fairy"] = 17
+ 
+        effective = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, .5, 0, 1, 1, .5, 1],
+        [1, .5, .5, 1, 2, 2, 1, 1, 1, 1, 1, 2, .5, 1, .5, 1, 2, 1] ,
+        [1, 2, .5, 1, .5, 1, 1, 1, 2, 1, 1, 1, 2, 1, .5, 1, 1, 1] ,
+        [1, 1, 2, .5, .5, 1, 1, 1, 0, 2, 1, 1, 1, 1, .5, 1, 1, 1] ,
+        [1, .5, 2, 1, .5, 1, 1, .5, 2, .5, 1, .5, 1, 1, .5, 1, .5, 1] ,
+        [1, .5, .5, 1, 2, .5, 1, 1, 2, 2, 1, 1, 1, 1, .5, 1, .5, 1] ,
+        [2, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
+        [1, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
+        [1, 2, 1, 2, .5, 1, 1, 2, 1, 0, 1, .5, 2, 1, 1, 1, 2, 1] ,
+        [1, 1, 1, .5, 2, 1, 2, 1, 1, 1, 1, 2, .5, 1, 1, 1, .5, 1] ,
+        [1, 1, 1, 1, 1, 1, 2, 2, 1, 1, .5, 1, 1, 1, 1, 0, .5, 1] ,
+        [1, .5, 1, 1, 2, 1, .5, .5, 1, .5, 2, 1, 1, .5, 1, 2, .5, 5] ,
+        [1, 2, 1, 1, 1, 2, .5, 1, .5, 2, 1, 2, 1, 1, 1, 1, .5, 1] ,
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 1] ,
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, .5, 0] ,
+        [1, 1, 1, 1, 1, 1, .5, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 5] ,
+        [1, .5, .5, .5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, .5, 2], 
+        [1, .5, 1, 1, 1, 1, 2, .5, 1, 1, 1, 1, 1, 1, 2, 2, .5, 1]] 
+
+
+        if pType != sType:
+            p_effective = effective[typedict[self.move.type]][typedict[self.def_poke.pType]]
+            s_effective = effective[typedict[self.move.type]][typedict[self.def_poke.sType]]    
+           return p_effective*s_effective
+
+        return p_effective
+
+        return effective[typedict[self.move.type]][typedict[self.def_poke.type]]
 
     def find_crit(self):
         """Crits double the damage - calculate this...""" # FIX
@@ -97,36 +92,142 @@ class Attack:
         return 1
 
     def find_rand(self):
-        """Attacks deal anywhere between 85% (inclusive) and 100% (exclusive) of their theoretical damage""" #Fix
-        # return random.uniform(0.85, 1)
+        """Attacks deal anywhere between 85% and 100% of their theoretical damage""" # FIX
         return 1
 
     def find_damage(self):
         """Calculate the damage and subtract that amount from defender
            http://bulbapedia.bulbagarden.net/wiki/Damage#Damage_formula"""
+
         if self.move.cat == 'Physical':
             attack = self.att_poke.att
             defense = self.def_poke.dfn
-        elif self.move.cat == 'Special':
+        elif self.move.cat == 'Special':    
             attack = self.att_poke.spA
             defense = self.def_poke.spD
         else: # status moves deal no damage
             attack = 0
-            defense = 9001
+            defense = 9001 
+        # print(attack,defense, self.move.pow, self.att_poke.lvl)
         base_damage = (((2.0*self.att_poke.lvl + 10) / 250) * attack / defense * self.move.pow) + 2
-        modifier = (self.find_stab() * self.find_effectiveness() * self.find_crit() * self.find_other() * self.find_rand())
+        modifier = (self.find_stab() * self.find_effectiveness() * self.find_crit() * 
+                        self.find_other() * self.find_rand())
+        # print(base_damage, modifier)
         damage = int(base_damage*modifier)
         self.def_poke.cHP -= damage
         return damage
+
+    def report_results(self, damage):
+        """inform user how much damage the attack would deal"""
+        return "> " + self.att_poke.name + " dealt " + str(damage) + " damage to " + self.def_poke.name + '!'
 
     def check_fainted(self):
         if self.def_poke.cHP <= 0:
             return "...RIP The defending " + self.def_poke.name + " fainted"
         else:
-            return "...The defending " + self.def_poke.name + " has " + str(self.def_poke.cHP) + " HP remaining"
+            return "...The defending " + self.def_poke.name + " has " + str(self.def_poke.cHP) + " HP remaining" 
+
+    def play(self):
+        print(self.report_results(self.find_damage()))
+        print(self.check_fainted())
+
+print(pikachu)
+print(squirtle)
+
+attack1 = Attack(pikachu, squirtle, tackle)
+attack1.play()
+attack1.play()
+attack1.play()
+attack1.play()
+attack1.play()
+attack1.play()
+
+print('\n<<<Squirtle fights back>>>\n')
+attack2 = Attack(squirtle, pikachu, tackle)
+attack2.play()
+attack2.play()
+attack2.play()
+
+print('\n<<<gg>>>\n')
+
+attack1.play() # rip
+
+print(pikachu)
+print(squirtle)
 
 
 
+def test(a, b, c):
+    """
+    >>> test("Normal", "Normal", "Normal")
+    1
+    >>> test("Normal", "Fire", "Ground")
+    1
+    >>> test("Normal", "Normal", "Poison")
+    1
+    >>> test("Normal", "Ghost", "Normal")
+    0
+    >>> test("Fire", "Fire", "Normal")
+    0.5
+    >>> test("Fire", "Water", "Normal")
+    0.5
+    >>> test("Ground", "Flying", "Normal")
+    0
+    >>> test("Ground", "Flying", "Flying")
+    0
+    >>> test("Ground", "Fire", "Electric")
+    4
+    >>> test("Ground", "Ghost", "Normal")
+    1
+    >>> test("Steel", "Ice", "Rock")
+    4
+    >>> test("Fairy", "Fighting", "Dragon")
+    4
+    >>> test("Fairy", "Fire", "Poison")
+    0.25
 
 
+    """
+    typedict = {}
+    typedict["Normal"] = 0
+    typedict["Fire"] = 1
+    typedict["Water"] = 2
+    typedict["Electric"] = 3
+    typedict["Grass"] = 4
+    typedict["Ice"] = 5
+    typedict["Fighting"] = 6
+    typedict["Poison"] = 7
+    typedict["Ground"] = 8
+    typedict["Flying"] = 9 
+    typedict["Physics"] = 10
+    typedict["Bug"] = 11
+    typedict["Rock"] = 12
+    typedict["Ghost"] = 13
+    typedict["Dragon"] = 14
+    typedict["Dark"] = 15
+    typedict["Steel"] = 16
+    typedict["Fairy"] = 17
 
+    effective = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, .5, 0, 1, 1, .5, 1],
+    [1, .5, .5, 1, 2, 2, 1, 1, 1, 1, 1, 2, .5, 1, .5, 1, 2, 1] ,
+    [1, 2, .5, 1, .5, 1, 1, 1, 2, 1, 1, 1, 2, 1, .5, 1, 1, 1] ,
+    [1, 1, 2, .5, .5, 1, 1, 1, 0, 2, 1, 1, 1, 1, .5, 1, 1, 1] ,
+    [1, .5, 2, 1, .5, 1, 1, .5, 2, .5, 1, .5, 1, 1, .5, 1, .5, 1] ,
+    [1, .5, .5, 1, 2, .5, 1, 1, 2, 2, 1, 1, 1, 1, .5, 1, .5, 1] ,
+    [2, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
+    [1, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
+    [1, 2, 1, 2, .5, 1, 1, 2, 1, 0, 1, .5, 2, 1, 1, 1, 2, 1] ,
+    [1, 1, 1, .5, 2, 1, 2, 1, 1, 1, 1, 2, .5, 1, 1, 1, .5, 1] ,
+    [1, 1, 1, 1, 1, 1, 2, 2, 1, 1, .5, 1, 1, 1, 1, 0, .5, 1] ,
+    [1, .5, 1, 1, 2, 1, .5, .5, 1, .5, 2, 1, 1, .5, 1, 2, .5, 5] ,
+    [1, 2, 1, 1, 1, 2, .5, 1, .5, 2, 1, 2, 1, 1, 1, 1, .5, 1] ,
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 1] ,
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, .5, 0] ,
+    [1, 1, 1, 1, 1, 1, .5, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 5] ,
+    [1, .5, .5, .5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, .5, 2], 
+    [1, .5, 1, 1, 1, 1, 2, .5, 1, 1, 1, 1, 1, 1, 2, 2, .5, 1]] 
+
+    p_effective = effective[typedict[a]][typedict[b]]
+    s_effective = effective[typedict[a]][typedict[c]]
+
+    return p_effective*s_effective
