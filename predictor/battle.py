@@ -10,8 +10,6 @@
 #         rand factor?
 #         testing of more attacks... more pokemon....
 
-from pokemon import *
-
 class Attack:
     def __init__(self, att_poke, def_poke, move):
         """the att_poke attacks def_poke, using move"""
@@ -28,24 +26,24 @@ class Attack:
            see http://pokemondb.net/type
          """
         typedict = {}
-        typedict["Normal"] = 0
-        typedict["Fire"] = 1
-        typedict["Water"] = 2
-        typedict["Electric"] = 3
-        typedict["Grass"] = 4
-        typedict["Ice"] = 5
-        typedict["Fighting"] = 6
-        typedict["Poison"] = 7
-        typedict["Ground"] = 8
-        typedict["Flying"] = 9 
-        typedict["Physics"] = 10
-        typedict["Bug"] = 11
-        typedict["Rock"] = 12
-        typedict["Ghost"] = 13
-        typedict["Dragon"] = 14
-        typedict["Dark"] = 15
-        typedict["Steel"] = 16
-        typedict["Fairy"] = 17
+        typedict["normal"] = 0
+        typedict["fire"] = 1
+        typedict["water"] = 2
+        typedict["electric"] = 3
+        typedict["grass"] = 4
+        typedict["ice"] = 5
+        typedict["fighting"] = 6
+        typedict["poison"] = 7
+        typedict["ground"] = 8
+        typedict["flying"] = 9
+        typedict["physics"] = 10
+        typedict["bug"] = 11
+        typedict["rock"] = 12
+        typedict["ghost"] = 13
+        typedict["dragon"] = 14
+        typedict["dark"] = 15
+        typedict["steel"] = 16
+        typedict["fairy"] = 17
  
         effective = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, .5, 0, 1, 1, .5, 1],
         [1, .5, .5, 1, 2, 2, 1, 1, 1, 1, 1, 2, .5, 1, .5, 1, 2, 1] ,
@@ -66,11 +64,10 @@ class Attack:
         [1, .5, .5, .5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, .5, 2], 
         [1, .5, 1, 1, 1, 1, 2, .5, 1, 1, 1, 1, 1, 1, 2, 2, .5, 1]] 
 
-
-        if pType != sType:
-            p_effective = effective[typedict[self.move.type]][typedict[self.def_poke.pType]]
-            s_effective = effective[typedict[self.move.type]][typedict[self.def_poke.sType]]    
-           return p_effective*s_effective
+        p_effective = effective[typedict[self.move.type.lower()]][typedict[self.def_poke.pType.lower()]]
+        if self.def_poke.pType != self.def_poke.sType:
+            s_effective = effective[typedict[self.move.type.lower()]][typedict[self.def_poke.sType.lower()]]
+            return p_effective*s_effective
 
         return p_effective
 
@@ -129,28 +126,5 @@ class Attack:
         print(self.report_results(self.find_damage()))
         print(self.check_fainted())
 
-print(pikachu)
-print(squirtle)
-
-attack1 = Attack(pikachu, squirtle, tackle)
-attack1.play()
-attack1.play()
-attack1.play()
-attack1.play()
-attack1.play()
-attack1.play()
-
-print('\n<<<Squirtle fights back>>>\n')
-attack2 = Attack(squirtle, pikachu, tackle)
-attack2.play()
-attack2.play()
-attack2.play()
-
-print('\n<<<gg>>>\n')
-
-attack1.play() # rip
-
-print(pikachu)
-print(squirtle)
 
 

@@ -31,7 +31,7 @@ class Pokemon:
         self.sType = sType
         self.nature = nature
         self.ability = ability
-    
+
     def __str__(self):
         """get a printout of all pokemon's info"""
 
@@ -53,8 +53,8 @@ class Pokemon:
 
 
 class Move:
-    def __init__(self, 
-        name, type, cat, pow, acc, eff):
+    def __init__(self,
+        name, type, cat, pow, acc, eff, pp):
         """
             name: 'Tackle'
             type: 'Normal'
@@ -62,6 +62,7 @@ class Move:
             pow: Power (ex: 50)
             acc: Accuracy up to 100 (ex: 100)
             eff: Optional Effect Text to be implemented later (ex: <blank> b/c no text)
+            pp: How many times can use
         """
         # assign instance variables for each of the traits
         self.name = name
@@ -70,6 +71,7 @@ class Move:
         self.pow = pow
         self.acc = acc
         self.eff = eff
+        self.pp = pp
 
     def __str__(self):
         """get a printout of all move's info"""
@@ -80,5 +82,6 @@ class Move:
             '\n Power: ' + str(self.pow) + \
             '\n Accuracy: ' + str(self.acc) + \
             '\n Effect: ' + self.eff + \
+            '\n Effect: ' + str(self.pp) + \
             '\n================'
 

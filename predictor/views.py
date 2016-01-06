@@ -27,12 +27,16 @@ def query(request):
             cHP = form.cleaned_data['current_HP']
             nature = form.cleaned_data['nature']
             ability = form.cleaned_data['ability']
+            move1 = form.cleaned_data['move1']
+            move2 = form.cleaned_data['move2']
+            move3 = form.cleaned_data['move3']
+            move4 = form.cleaned_data['move4']
             opp_name = form.cleaned_data['opp_name']
             opp_lvl = form.cleaned_data['opp_level']
             opp_cHP = form.cleaned_data['opp_current_HP']
             opp_nature = form.cleaned_data['opp_nature']
             opp_ability = form.cleaned_data['opp_ability']
-            move = choose_move(name,lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability)
+            move = choose_move(name,lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability, move1, move2, move3, move4)
             return HttpResponse(move)
     else:
         form = PokeForm()

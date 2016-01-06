@@ -24,9 +24,14 @@ json_data = open('predictor/rby.json')
 set_rby = json.load(json_data)
 
 
-def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability):
+def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability, move1, move2, move3, move4):
     pokemon = get_Pokemon(name, lvl, cHP, nature, ability)
     opp_pokemon = get_Pokemon(opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability)
+    move1 = find_move_info(name, move1)
+    move2 = find_move_info(name, move2)
+    move3 = find_move_info(name, move3)
+    move4 = find_move_info(name, move4)
+    moves = [move1, move2, move3, move4]
     tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
     tail_whip = Move('Tail Whip', 'Normal', 'Status', 50, 30, 'Lowers Opponent\'s Defense')
     water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
@@ -40,6 +45,28 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp
             move_chosen = move
             dmg = new_dmg
     return move_chosen
+
+def find_move_info(poke_name, move_name):
+    try:
+        poke_data = pykemon.get(pokemon=poke_name.lower())
+    except KeyError:
+        DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT)
+        return DEFAULT_POKEMON
+    moves = poke_data.moves
+    if move_name in moves:
+        get_info = moves[move_name]
+        get_info = str(get_info)
+        strlen = len(get_info)
+        move_id = get_info[11:strlen-1]
+        move_id = int(move_id)
+        move_data = pykemon.get(move_id=move_id)
+        #TODO figure out type and category on pokeapi!!!
+        return Move(move_data.name, DEFAULT, move_data.category, move_data.power, move_data.accuracy, move_data.description, move_data.pp)
+
+    else:
+        DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
+        return DEFAULT_MOVE
+
 
 
 def get_Pokemon(name, lvl, cHP, nature, ability):

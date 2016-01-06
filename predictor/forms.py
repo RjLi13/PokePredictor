@@ -16,7 +16,3 @@ class PokeForm(forms.Form):
     opp_current_HP = forms.IntegerField(label='Opponent\'s  Pokemon current HP')
     opp_nature = forms.CharField(label='Opponent\'s  Pokemon nature', max_length=50)
     opp_ability = forms.CharField(label='Opponent\'s  Pokemon ability', max_length=100)
-    opp_move1 = forms.CharField(label='Opponent\'s  Pokemon move 1', max_length=100)
-    opp_move2 = forms.CharField(label='Opponent\'s  Pokemon move 2', max_length=100)
-    opp_move3 = forms.CharField(label='Opponent\'s  Pokemon move 3', max_length=100)
-    opp_move4 = forms.CharField(label='Opponent\'s  Pokemon move 4', max_length=100)
