@@ -1,29 +1,33 @@
-<ul>
 {% csrf_token %}
-{% for poke_set, poke_info in poke1_sets.items %}
-    <li>{{poke_set}}</li>
-    <ul>
-    {% for key, value in poke_info.items %}
-      <li>{{key}}</li>
+{% if custom == True %}
+<ul>
+    {% for poke_set, poke_info in poke1_sets.items %}
+        <li>{{poke_set}}</li>
         <ul>
-        {% if key == 'moves' %}
-            {% for move in value %}
-                <li>{{move}}</li>
-            {% endfor %}
-        {% elif key == 'evs'%}
-            {% for stat, stat_value in value.items %}
-                <li>{{ stat }}</li>
-                <ul>
-                    <li>{{ stat_value }}</li>
-                </ul>
-            {% endfor %}
-        {% else %}
-            <li>{{value}}</li>
-        {% endif %}
+        {% for key, value in poke_info.items %}
+          <li>{{key}}</li>
+            <ul>
+            {% if key == 'moves' %}
+                {% for move in value %}
+                    <li>{{move}}</li>
+                {% endfor %}
+            {% elif key == 'evs'%}
+                {% for stat, stat_value in value.items %}
+                    <li>{{ stat }}</li>
+                    <ul>
+                        <li>{{ stat_value }}</li>
+                    </ul>
+                {% endfor %}
+            {% else %}
+                <li>{{value}}</li>
+            {% endif %}
+            </ul>
+        {% endfor %}
         </ul>
     {% endfor %}
-    </ul>
-{% endfor %}
 </ul>
+{% else %}
+    <p>{{ pokemon }}</p>
+{% endif %}
 
 <a href="{% url 'predictor:index' %}">Try again?</a>

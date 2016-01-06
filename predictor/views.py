@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from .forms import PokeForm
 
-from poke_set_info import set_bw, set_dpp, set_gsc, set_rby, set_rse
+from utils import *
 
 # Create your views here.
 def index(request):
@@ -14,9 +15,36 @@ def search(request):
     except KeyError:
         print("Pokemon not found")
         return render(request, 'predictor/index.html')
-    return HttpResponseRedirect(reverse('predictor:results', args=(search_id,)))
+    custom = 1
+    return HttpResponseRedirect(reverse('predictor:results', args=(search_id,custom,)))
 
-def results(request, search_id):
-    poke1_sets = set_bw[search_id]
-    # return HttpResponse("You're looking at %s." % poke1_sets)
-    return render(request, 'predictor/results.html', {'poke1_sets': poke1_sets})
+def query(request):
+    if request.method == 'POST':
+        form = PokeForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            lvl = form.cleaned_data['level']
+            cHP = form.cleaned_data['current_HP']
+            nature = form.cleaned_data['nature']
+            ability = form.cleaned_data['ability']
+            opp_name = form.cleaned_data['opp_name']
+            opp_lvl = form.cleaned_data['opp_level']
+            opp_cHP = form.cleaned_data['opp_current_HP']
+            opp_nature = form.cleaned_data['opp_nature']
+            opp_ability = form.cleaned_data['opp_ability']
+            move = choose_move(name,lvl, cHP, nature, ability, opp_name, opp_lvl, opp_cHP, opp_nature, opp_ability)
+            return HttpResponse(move)
+    else:
+        form = PokeForm()
+    return render(request, 'predictor/pokeform.html', {'form': form})
+
+
+def results(request, search_id, custom):
+    search_id = str(search_id)
+    search_id = search_id.lower()
+    if custom == '1':
+        upper_char = search_id[0].upper()
+        print upper_char
+        search_id = upper_char + search_id[1:]
+        poke1_sets = set_bw[search_id]
+        return render(request, 'predictor/results.html', {'poke1_sets': poke1_sets, 'custom': True})

@@ -77,7 +77,6 @@ WSGI_APPLICATION = 'PokePredictor.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'pokedex/pokedex/data/pokedex.sqlite'),
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }

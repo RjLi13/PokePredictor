@@ -6,6 +6,7 @@
     <meta charset="utf-8"/>
     <title>PokePredictor</title>
 
+{#   TODO   This needs to be css format #}
   	<style>
   	body {
   		background : # C88898;
@@ -59,14 +60,42 @@
 	    Questions? Contact
 	    <a href="mailto:ruijing.li@berkeley.edu">EECS Master</a></p>
 
-	<div id="logo">
-		<img src="https://pbs.twimg.com/profile_images/378800000737568866/6227301dbe1097cb8ab4c8633d662907.png" width= "200" height= "200" alt= "Showdown logo" title= "Showdown!"
-		</img>
-	</div> <!--End of Logo-->
-
 	<hr/>
 
-    <h1>"Choose a pokemon"</h1>
+    <h1>"Choose a pokemon, its moves, nature, and ability here"</h1>
+{#    <div id="form1">#}
+{#    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}#}
+{#    #}
+{#    <form action="{% url 'predictor:query' %}" method="post">#}
+{#        {% csrf_token %}#}
+{#     <input type="text" name="mytextbox" size="20"/>#}
+{#     <input type="submit" class="btn" value="Click" name="mybtn">#}
+{#    </form>#}
+{#    </div>#}
+{#    #}
+{#    <div id = "wrapper">#}
+{#  		<div id="header">#}
+{#  			Moves#}
+{#  		</div> <!--End of Header-->#}
+{##}
+{#  	    <div id = "table">#}
+{#            <table border="1"; style="width:100%">#}
+{#                <tr>#}
+{#                <td><button type="button">Move 1</button> </td>#}
+{#                <td><button type="button">Move 2</button></td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                <td><button type="button">Move 3</button></td>#}
+{#                <td><button type="button">Move 4</button></td>#}
+{#                </tr>#}
+{#            </table>#}
+{#  	    </div> <!--End of Table-->#}
+{#  	</div> <!--End of Wrapper-->#}
+    <a href="{% url 'predictor:query' %}">Click here</a>
+
+    <h1>OR</h1>
+
+    <h1>"Choose a pokemon from our custom set"</h1>
     <div id="form">
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -76,26 +105,6 @@
      <input type="submit" class="btn" value="Click" name="mybtn">
     </form>
     </div> <!--end Div-->
-
-  	<div id = "wrapper">
-  		<div id="header">
-  			Moves
-  		</div> <!--End of Header-->
-
-  	<div id = "table">
-  		<table border="1"; style="width:100%">
-			<tr>
-			<td><button type="button">Move 1</button> </td>
-			<td><button type="button">Move 2</button></td>
-			</tr>
-			<tr>
-			<td><button type="button">Move 3</button></td>
-			<td><button type="button">Move 4</button></td>
-			</tr>
-		</table>
-  	</div> <!--End of Table-->
-
-  	</div> <!--End of Wrapper-->
 
 
   </body>
