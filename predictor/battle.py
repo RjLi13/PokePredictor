@@ -74,8 +74,6 @@ class Attack:
 
         return p_effective
 
-        return effective[typedict[self.move.type]][typedict[self.def_poke.type]]
-
     def find_crit(self):
         """Crits double the damage - calculate this...""" # FIX
         return 1
@@ -156,78 +154,3 @@ print(pikachu)
 print(squirtle)
 
 
-
-def test(a, b, c):
-    """
-    >>> test("Normal", "Normal", "Normal")
-    1
-    >>> test("Normal", "Fire", "Ground")
-    1
-    >>> test("Normal", "Normal", "Poison")
-    1
-    >>> test("Normal", "Ghost", "Normal")
-    0
-    >>> test("Fire", "Fire", "Normal")
-    0.5
-    >>> test("Fire", "Water", "Normal")
-    0.5
-    >>> test("Ground", "Flying", "Normal")
-    0
-    >>> test("Ground", "Flying", "Flying")
-    0
-    >>> test("Ground", "Fire", "Electric")
-    4
-    >>> test("Ground", "Ghost", "Normal")
-    1
-    >>> test("Steel", "Ice", "Rock")
-    4
-    >>> test("Fairy", "Fighting", "Dragon")
-    4
-    >>> test("Fairy", "Fire", "Poison")
-    0.25
-
-
-    """
-    typedict = {}
-    typedict["Normal"] = 0
-    typedict["Fire"] = 1
-    typedict["Water"] = 2
-    typedict["Electric"] = 3
-    typedict["Grass"] = 4
-    typedict["Ice"] = 5
-    typedict["Fighting"] = 6
-    typedict["Poison"] = 7
-    typedict["Ground"] = 8
-    typedict["Flying"] = 9 
-    typedict["Physics"] = 10
-    typedict["Bug"] = 11
-    typedict["Rock"] = 12
-    typedict["Ghost"] = 13
-    typedict["Dragon"] = 14
-    typedict["Dark"] = 15
-    typedict["Steel"] = 16
-    typedict["Fairy"] = 17
-
-    effective = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, .5, 0, 1, 1, .5, 1],
-    [1, .5, .5, 1, 2, 2, 1, 1, 1, 1, 1, 2, .5, 1, .5, 1, 2, 1] ,
-    [1, 2, .5, 1, .5, 1, 1, 1, 2, 1, 1, 1, 2, 1, .5, 1, 1, 1] ,
-    [1, 1, 2, .5, .5, 1, 1, 1, 0, 2, 1, 1, 1, 1, .5, 1, 1, 1] ,
-    [1, .5, 2, 1, .5, 1, 1, .5, 2, .5, 1, .5, 1, 1, .5, 1, .5, 1] ,
-    [1, .5, .5, 1, 2, .5, 1, 1, 2, 2, 1, 1, 1, 1, .5, 1, .5, 1] ,
-    [2, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
-    [1, 1, 1, 1, 1, 2, 1, .5, 1, .5, .5, .5, 2, 0, 1, 2, 2, 5] ,
-    [1, 2, 1, 2, .5, 1, 1, 2, 1, 0, 1, .5, 2, 1, 1, 1, 2, 1] ,
-    [1, 1, 1, .5, 2, 1, 2, 1, 1, 1, 1, 2, .5, 1, 1, 1, .5, 1] ,
-    [1, 1, 1, 1, 1, 1, 2, 2, 1, 1, .5, 1, 1, 1, 1, 0, .5, 1] ,
-    [1, .5, 1, 1, 2, 1, .5, .5, 1, .5, 2, 1, 1, .5, 1, 2, .5, 5] ,
-    [1, 2, 1, 1, 1, 2, .5, 1, .5, 2, 1, 2, 1, 1, 1, 1, .5, 1] ,
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 1] ,
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, .5, 0] ,
-    [1, 1, 1, 1, 1, 1, .5, 1, 1, 1, 2, 1, 1, 2, 1, .5, 1, 5] ,
-    [1, .5, .5, .5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, .5, 2], 
-    [1, .5, 1, 1, 1, 1, 2, .5, 1, 1, 1, 1, 1, 1, 2, 2, .5, 1]] 
-
-    p_effective = effective[typedict[a]][typedict[b]]
-    s_effective = effective[typedict[a]][typedict[c]]
-
-    return p_effective*s_effective
