@@ -10,6 +10,35 @@
 #         rand factor?
 #         testing of more attacks... more pokemon....
 
+NATURES = {
+    'Adamant':['at','sa'],
+    'Bashful':['',''],
+    'Bold':['df','at'],
+    'Brave':['at','sp'],
+    'Calm':['sd','at'],
+    'Careful':['sd','sa'],
+    'Docile':['',''],
+    'Gentle':['sd','df'],
+    'Hardy':['',''],
+    'Hasty':['sp','df'],
+    'Impish':['df','sa'],
+    'Jolly':['sp','sa'],
+    'Lax':['df','sd'],
+    'Lonely':['at','df'],
+    'Mild':['sa','df'],
+    'Modest':['sa','at'],
+    'Naive':['sp','sd'],
+    'Naughty':['at','sd'],
+    'Quiet':['sa','sp'],
+    'Quirky':['',''],
+    'Rash':['sa','sd'],
+    'Relaxed':['df','sp'],
+    'Sassy':['sd','sp'],
+    'Serious':['',''],
+    'Timid':['sp','at']
+}
+
+
 class Attack:
     def __init__(self, att_poke, def_poke, move):
         """the att_poke attacks def_poke, using move"""
@@ -36,7 +65,7 @@ class Attack:
         typedict["poison"] = 7
         typedict["ground"] = 8
         typedict["flying"] = 9
-        typedict["physics"] = 10
+        typedict["psychic"] = 10
         typedict["bug"] = 11
         typedict["rock"] = 12
         typedict["ghost"] = 13

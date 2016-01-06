@@ -55,7 +55,7 @@
 
 	<h2>PokePredictor</h2>
 	<p>
-	    simple webapp to calculate expected values of possible moves in pokemon showdown </p>
+	    simple webapp to calculate which move you should choose through expected values of possible moves in pokemon showdown </p>
 	<p>
 	    Questions? Contact
 	    <a href="mailto:ruijing.li@berkeley.edu">EECS Master</a></p>
@@ -63,49 +63,7 @@
 	<hr/>
 
     <h1>"Choose a pokemon, its moves, nature, and ability here"</h1>
-{#    <div id="form1">#}
-{#    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}#}
-{#    #}
-{#    <form action="{% url 'predictor:query' %}" method="post">#}
-{#        {% csrf_token %}#}
-{#     <input type="text" name="mytextbox" size="20"/>#}
-{#     <input type="submit" class="btn" value="Click" name="mybtn">#}
-{#    </form>#}
-{#    </div>#}
-{#    #}
-{#    <div id = "wrapper">#}
-{#  		<div id="header">#}
-{#  			Moves#}
-{#  		</div> <!--End of Header-->#}
-{##}
-{#  	    <div id = "table">#}
-{#            <table border="1"; style="width:100%">#}
-{#                <tr>#}
-{#                <td><button type="button">Move 1</button> </td>#}
-{#                <td><button type="button">Move 2</button></td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                <td><button type="button">Move 3</button></td>#}
-{#                <td><button type="button">Move 4</button></td>#}
-{#                </tr>#}
-{#            </table>#}
-{#  	    </div> <!--End of Table-->#}
-{#  	</div> <!--End of Wrapper-->#}
     <a href="{% url 'predictor:query' %}">Click here</a>
-
-    <h1>OR</h1>
-
-    <h1>"Choose a pokemon from our custom set"</h1>
-    <div id="form">
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-    <form action="{% url 'predictor:search' %}" method="post">
-        {% csrf_token %}
-     <input type="text" name="mytextbox" size="20"/>
-     <input type="submit" class="btn" value="Click" name="mybtn">
-    </form>
-    </div> <!--end Div-->
-
 
   </body>
 

@@ -1,7 +1,7 @@
 # Basic Framework for pokemon and their moves
 
 class Pokemon:
-    def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability):
+    def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability, item, evs):
         """
             name: 'pikachu'
             level: 1 to 100
@@ -16,6 +16,8 @@ class Pokemon:
             sType: Secondary Type - same as primary type if no secondary type (Electric)
             Nature: Nature of pokemon, affects stats
             Ability: Ability of pokemon, may affect moves, stats, opponent pokemon, etc
+            Item: Item Pokemon is currently holding
+            Evs: Stat boosters
         """
         # assign instance variables for each of the traits
         self.name = name
@@ -31,6 +33,8 @@ class Pokemon:
         self.sType = sType
         self.nature = nature
         self.ability = ability
+        self.item = item
+        self.evs = evs
 
     def __str__(self):
         """get a printout of all pokemon's info"""
@@ -48,8 +52,14 @@ class Pokemon:
             '\n Secondary Type: ' + self.sType + \
             '\n Nature: ' + self.nature + \
             '\n Ability: ' + self.ability + \
+            '\n Item: ' + self.item + \
+            '\n' + self.format_evs() + \
             '\n================'
 
+    def format_evs(self):
+        for ev, ev_value in self.evs.items():
+            print '\n Ev ' + ev + ': ' + str(ev_value)
+        return ""
 
 
 class Move:
@@ -82,6 +92,6 @@ class Move:
             '\n Power: ' + str(self.pow) + \
             '\n Accuracy: ' + str(self.acc) + \
             '\n Effect: ' + self.eff + \
-            '\n Effect: ' + str(self.pp) + \
+            '\n PP: ' + str(self.pp) + \
             '\n================'
 
