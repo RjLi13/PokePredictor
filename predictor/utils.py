@@ -6,23 +6,24 @@ from pokemon import *
 from battle import *
 import json
 import urllib2
+import random
 
 DEFAULT = '<blank>'
 
 json_data = open('predictor/bw.json')
 set_bw = json.load(json_data)
 
-json_data = open('predictor/dpp.json')
-set_dpp = json.load(json_data)
-
-json_data = open('predictor/gse.json')
-set_rse = json.load(json_data)
-
-json_data = open('predictor/gsc.json')
-set_gsc = json.load(json_data)
-
-json_data = open('predictor/rby.json')
-set_rby = json.load(json_data)
+# json_data = open('predictor/dpp.json')
+# set_dpp = json.load(json_data)
+#
+# json_data = open('predictor/gse.json')
+# set_rse = json.load(json_data)
+#
+# json_data = open('predictor/gsc.json')
+# set_gsc = json.load(json_data)
+#
+# json_data = open('predictor/rby.json')
+# set_rby = json.load(json_data)
 
 
 def makeCapitalString(word):
@@ -51,6 +52,7 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
     dmg = 0
     move_chosen = None
     for move in moves:
+        # print move
         new_dmg = Attack(pokemon, opp_pokemon, move).find_damage()
         if new_dmg > dmg or (new_dmg == dmg and move.acc > move_chosen.acc):
             move_chosen = move
@@ -66,9 +68,10 @@ def get_opponent_info(opp_name, opp_cHP):
         return DEFAULT_POKEMON
 
     # TODO how to determine which set to use?
-    poke_set = None
-    for key, values in poke_sets.items():
-        poke_set = values
+    poke_sets_keys = list(poke_sets.keys())
+    index = random.randint(0, len(poke_sets_keys)-1)
+    poke_set_key = poke_sets_keys[index]
+    poke_set = poke_sets[poke_set_key]
     poke_types = poke_data.types
     poke_pType = poke_types.keys()[0]
     poke_sType = poke_pType
@@ -78,7 +81,7 @@ def get_opponent_info(opp_name, opp_cHP):
     pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
                       poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
                       poke_sType, poke_set['nature'], poke_set['ability'], poke_set['item'], poke_set['evs'])
-    print "Opponent Pokemon %s" %pokemon
+    #print "Opponent Pokemon %s" %pokemon
     return pokemon
 
 
@@ -142,7 +145,7 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     pokemon = Pokemon(poke_name, poke_lvl, poke_mHp, poke_cHp, poke_atk,
                       poke_def, poke_spatk, poke_spdef, poke_speed, poke_pType,
                       poke_sType, poke_nature, poke_ability, item, evs)
-    print "My Pokemon %s" %pokemon
+    #print "My Pokemon %s" %pokemon
     return pokemon
 
 def check_validity(lvl, cHP, ability, evs):
