@@ -30,12 +30,8 @@ NATURES = {
 
 
 class Pokemon:
-<<<<<<< HEAD
-    def __init__(self, 
-        name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, moves):
-=======
     def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability, item, evs):
->>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
+
         """
             name: 'pikachu'
             level: 1 to 100
@@ -48,34 +44,15 @@ class Pokemon:
             spe: Speed (ex: 90)
             pType: Primary Type (Electric)
             sType: Secondary Type - same as primary type if no secondary type (Electric)
-<<<<<<< HEAD
-            moves: a list of 4 possible attacks this pokemon can have
-                   (ex: [Tackle, Tail Whip, Thunderbolt, <blank>])
-                   each of these are Move Objects
-=======
             Nature: Nature of pokemon, affects stats
             Ability: Ability of pokemon, may affect moves, stats, opponent pokemon, etc
             Item: Item Pokemon is currently holding
             Evs: Stat boosters
->>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
         """
         # assign instance variables for each of the traits
         self.name = name
         self.lvl = lvl
         self.pType = pType
-<<<<<<< HEAD
-        self.sType = sType 
-        self.moves = moves 
-
-    def format_moves(self):
-        """As moves is a list of move objects,
-           use method for getting the names of each move"""
-        moves_str = '[ '
-        for move in self.moves[:len(self.moves)-1]:
-            moves_str += move.name + ', '
-        return moves_str + self.moves[len(self.moves)-1].name + ']'
-    
-=======
         self.sType = sType
         self.nature = nature
         self.ability = ability
@@ -116,7 +93,6 @@ class Pokemon:
             STATS[stat_boost] = STATS[stat_boost] * 1.1
             STATS[stat_drop] = STATS[stat_drop] * 0.9
 
->>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
     def __str__(self):
         """get a printout of all pokemon's info"""
 
@@ -131,14 +107,10 @@ class Pokemon:
             '\n Speed: ' + str(self.spe) + \
             '\n Primary Type: ' + self.pType + \
             '\n Secondary Type: ' + self.sType + \
-<<<<<<< HEAD
-            '\n Moves: ' + self.format_moves() + \
-=======
             '\n Nature: ' + self.nature + \
             '\n Ability: ' + self.ability + \
             '\n Item: ' + self.item + \
             '\n' + self.format_evs() + \
->>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
             '\n================'
 
     def format_evs(self):
