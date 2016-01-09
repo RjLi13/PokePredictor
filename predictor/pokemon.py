@@ -152,20 +152,3 @@ class Move:
             '\n PP: ' + str(self.pp) + \
             '\n================'
 
-
-# defaults
-DEFAULT = '<blank>'
-DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
-DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, [DEFAULT_MOVE, DEFAULT_MOVE, DEFAULT_MOVE, DEFAULT_MOVE])
-
-# moves 
-tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
-tail_whip = Move('Tail Whip', 'Normal', 'Status', 0, 30, 'Lowers Opponent\'s Defense')
-water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
-thunder_shock = Move('Thunder Shock', 'Electric', 'Special', 40, 100, 'May paralyze opponent')
-
-# pokemon
-pikachu = Pokemon('Pikachu', 10, 35, 35, 55, 40, 50, 50, 90, 'Electric', 'Electric', [tackle, tail_whip, thunder_shock, DEFAULT_MOVE])
-squirtle = Pokemon('Squirtle', 10, 44, 44, 48, 65, 50, 64, 43, 'Water', 'Water', [tackle, tail_whip, water_gun, DEFAULT_MOVE] )
-
-
