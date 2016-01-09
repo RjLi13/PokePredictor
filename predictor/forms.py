@@ -15,7 +15,7 @@ class PokeForm(forms.Form):
     category_choices = [('Physical', 'Physical'), ('Special', 'Special'), ('Status', 'Status')]
     name = forms.CharField(label='Your Pokemon name', max_length=30)
     level = forms.IntegerField(label='Your Pokemon level')
-    current_HP = forms.IntegerField(label='Your Pokemon current HP')
+    current_HP = forms.IntegerField(label='Your Pokemon current HP (as percentage %)')
     ev_hp = forms.IntegerField(label='Your Pokemon evs on HP', required=False)
     ev_atk = forms.IntegerField(label='Your Pokemon evs on Atk', required=False)
     ev_def = forms.IntegerField(label='Your Pokemon evs on Def', required=False)

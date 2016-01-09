@@ -1,5 +1,34 @@
 # Basic Framework for pokemon and their moves
 
+NATURES = {
+    'Adamant':['at','sa'],
+    'Bashful':['',''],
+    'Bold':['df','at'],
+    'Brave':['at','sp'],
+    'Calm':['sd','at'],
+    'Careful':['sd','sa'],
+    'Docile':['',''],
+    'Gentle':['sd','df'],
+    'Hardy':['',''],
+    'Hasty':['sp','df'],
+    'Impish':['df','sa'],
+    'Jolly':['sp','sa'],
+    'Lax':['df','sd'],
+    'Lonely':['at','df'],
+    'Mild':['sa','df'],
+    'Modest':['sa','at'],
+    'Naive':['sp','sd'],
+    'Naughty':['at','sd'],
+    'Quiet':['sa','sp'],
+    'Quirky':['',''],
+    'Rash':['sa','sd'],
+    'Relaxed':['df','sp'],
+    'Sassy':['sd','sp'],
+    'Serious':['',''],
+    'Timid':['sp','at']
+}
+
+
 class Pokemon:
     def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability, item, evs):
         """
@@ -22,19 +51,46 @@ class Pokemon:
         # assign instance variables for each of the traits
         self.name = name
         self.lvl = lvl
-        self.mHP = mHP
-        self.cHP = cHP
-        self.att = att
-        self.dfn = dfn
-        self.spA = spA
-        self.spD = spD
-        self.spe = spe
         self.pType = pType
         self.sType = sType
         self.nature = nature
         self.ability = ability
         self.item = item
+        iv = 31
+        if 'at' not in evs:
+            evs['at'] = 0
+        if 'df' not in evs:
+            evs['df'] = 0
+        if 'sa' not in evs:
+            evs['sa'] = 0
+        if 'sd' not in evs:
+            evs['sd'] = 0
+        if 'sp' not in evs:
+            evs['sp'] = 0
+        if 'hp' not in evs:
+            evs['hp'] = 0
         self.evs = evs
+        self.att = ((att * 2 + iv + evs['at']//4) * lvl / 100) + 5
+        self.dfn = ((dfn * 2 + iv + evs['df']//4) * lvl / 100) + 5
+        self.spA = ((spA * 2 + iv + evs['sa']//4) * lvl / 100) + 5
+        self.spD = ((spD * 2 + iv + evs['sd']//4) * lvl / 100) + 5
+        self.spe = ((spe * 2 + iv + evs['sp']//4) * lvl / 100) + 5
+        self.mHP = ((mHP * 2 + iv + evs['hp']//4) * lvl / 100) + 10 + lvl
+        if name.lower() == 'shedinja':
+            self.mHP = 1
+        self.cHP = cHP / 100 * self.mHP
+        STATS = {
+            'at': self.att,
+            'df': self.dfn,
+            'sa': self.spA,
+            'sd': self.spD,
+            'sp': self.spe
+        }
+        stat_boost = NATURES[nature][0]
+        stat_drop = NATURES[nature][1]
+        if stat_boost:
+            STATS[stat_boost] = STATS[stat_boost] * 1.1
+            STATS[stat_drop] = STATS[stat_drop] * 0.9
 
     def __str__(self):
         """get a printout of all pokemon's info"""

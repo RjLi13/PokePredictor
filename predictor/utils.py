@@ -77,7 +77,6 @@ def get_opponent_info(opp_name, opp_cHP):
     poke_sType = poke_pType
     if len(poke_types) == 2:
         poke_pType = poke_types.keys()[1]
-    opp_cHP = opp_cHP/100 * poke_data.hp
     pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
                       poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
                       poke_sType, poke_set['nature'], poke_set['ability'], poke_set['item'], poke_set['evs'])
@@ -132,8 +131,8 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     if len(poke_types) == 2:
         poke_pType = poke_types.keys()[1]
     poke_lvl = lvl
-    poke_mHp = poke_data.hp
-    poke_cHp = cHP / 100 * poke_mHp
+    poke_mHP = poke_data.hp
+    poke_cHP = cHP
     if not nature:
         nature = DEFAULT
     if not ability:
@@ -142,10 +141,10 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
         item = DEFAULT
     poke_nature = nature
     poke_ability = ability
-    pokemon = Pokemon(poke_name, poke_lvl, poke_mHp, poke_cHp, poke_atk,
+    pokemon = Pokemon(poke_name, poke_lvl, poke_mHP, poke_cHP, poke_atk,
                       poke_def, poke_spatk, poke_spdef, poke_speed, poke_pType,
                       poke_sType, poke_nature, poke_ability, item, evs)
-    #print "My Pokemon %s" %pokemon
+    print "My Pokemon %s" %pokemon
     return pokemon
 
 def check_validity(lvl, cHP, ability, evs):
@@ -153,8 +152,12 @@ def check_validity(lvl, cHP, ability, evs):
         return False
     if cHP < 0 or cHP > 100:
         return False
+    ev_sum = 0
     for key, value in evs.items():
         if value > 252 or value < 0:
             return False
+        ev_sum += value
+    if ev_sum > 510:
+        return False
     return True
 
