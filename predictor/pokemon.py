@@ -30,7 +30,12 @@ NATURES = {
 
 
 class Pokemon:
+<<<<<<< HEAD
+    def __init__(self, 
+        name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, moves):
+=======
     def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability, item, evs):
+>>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
         """
             name: 'pikachu'
             level: 1 to 100
@@ -43,15 +48,34 @@ class Pokemon:
             spe: Speed (ex: 90)
             pType: Primary Type (Electric)
             sType: Secondary Type - same as primary type if no secondary type (Electric)
+<<<<<<< HEAD
+            moves: a list of 4 possible attacks this pokemon can have
+                   (ex: [Tackle, Tail Whip, Thunderbolt, <blank>])
+                   each of these are Move Objects
+=======
             Nature: Nature of pokemon, affects stats
             Ability: Ability of pokemon, may affect moves, stats, opponent pokemon, etc
             Item: Item Pokemon is currently holding
             Evs: Stat boosters
+>>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
         """
         # assign instance variables for each of the traits
         self.name = name
         self.lvl = lvl
         self.pType = pType
+<<<<<<< HEAD
+        self.sType = sType 
+        self.moves = moves 
+
+    def format_moves(self):
+        """As moves is a list of move objects,
+           use method for getting the names of each move"""
+        moves_str = '[ '
+        for move in self.moves[:len(self.moves)-1]:
+            moves_str += move.name + ', '
+        return moves_str + self.moves[len(self.moves)-1].name + ']'
+    
+=======
         self.sType = sType
         self.nature = nature
         self.ability = ability
@@ -92,6 +116,7 @@ class Pokemon:
             STATS[stat_boost] = STATS[stat_boost] * 1.1
             STATS[stat_drop] = STATS[stat_drop] * 0.9
 
+>>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
     def __str__(self):
         """get a printout of all pokemon's info"""
 
@@ -106,10 +131,14 @@ class Pokemon:
             '\n Speed: ' + str(self.spe) + \
             '\n Primary Type: ' + self.pType + \
             '\n Secondary Type: ' + self.sType + \
+<<<<<<< HEAD
+            '\n Moves: ' + self.format_moves() + \
+=======
             '\n Nature: ' + self.nature + \
             '\n Ability: ' + self.ability + \
             '\n Item: ' + self.item + \
             '\n' + self.format_evs() + \
+>>>>>>> c8c9f53e2f0b139b49c5954565b66017abb221d3
             '\n================'
 
     def format_evs(self):
@@ -150,4 +179,21 @@ class Move:
             '\n Effect: ' + self.eff + \
             '\n PP: ' + str(self.pp) + \
             '\n================'
+
+
+# defaults
+DEFAULT = '<blank>'
+DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
+DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, [DEFAULT_MOVE, DEFAULT_MOVE, DEFAULT_MOVE, DEFAULT_MOVE])
+
+# moves 
+tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
+tail_whip = Move('Tail Whip', 'Normal', 'Status', 0, 30, 'Lowers Opponent\'s Defense')
+water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
+thunder_shock = Move('Thunder Shock', 'Electric', 'Special', 40, 100, 'May paralyze opponent')
+
+# pokemon
+pikachu = Pokemon('Pikachu', 10, 35, 35, 55, 40, 50, 50, 90, 'Electric', 'Electric', [tackle, tail_whip, thunder_shock, DEFAULT_MOVE])
+squirtle = Pokemon('Squirtle', 10, 44, 44, 48, 65, 50, 64, 43, 'Water', 'Water', [tackle, tail_whip, water_gun, DEFAULT_MOVE] )
+
 
