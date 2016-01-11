@@ -5,11 +5,24 @@ from .forms import PokeForm
 
 from utils import *
 
-# Create your views here.
+"""Views are functions that do the work after visiting the url
+"""
 def index(request):
+    """
+    Hompeage of webapp
+    :param request:
+    :return: Index
+    """
     return render(request, 'predictor/index.html')
 
 def query(request):
+    """
+    This is the main method that creates a form and then collects the data
+    in form.cleaned_data and passes it to methods in util to do the actual work,
+    then render into a website
+    :param request:
+    :return: HTTPRESPONSE
+    """
     if request.method == 'POST':
         form = PokeForm(request.POST)
         if form.is_valid():

@@ -27,6 +27,11 @@ set_bw = json.load(json_data)
 
 
 def makeCapitalString(word):
+    """
+    Makes word Capital
+    :param word:
+    :return: word
+    """
     word = str(word)
     word = word.lower()
     upper_char = word[0].upper()
@@ -36,14 +41,42 @@ def makeCapitalString(word):
 def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
                 move1, move2, move3, move4,  move1_type, move2_type, move3_type, move4_type, move1_category,
                 move2_category, move3_category, move4_category, item, num_pokemon, opp_num_pokemon, evs):
+    """
+    Predicts the move
+    :param name:
+    :param lvl:
+    :param cHP:
+    :param nature:
+    :param ability:
+    :param opp_name:
+    :param opp_cHP:
+    :param move1:
+    :param move2:
+    :param move3:
+    :param move4:
+    :param move1_type:
+    :param move2_type:
+    :param move3_type:
+    :param move4_type:
+    :param move1_category:
+    :param move2_category:
+    :param move3_category:
+    :param move4_category:
+    :param item:
+    :param num_pokemon:
+    :param opp_num_pokemon:
+    :param evs:
+    :return: Returns best move
+    """
     if not item:
         item = DEFAULT
     if not ability:
         ability = DEFAULT
     pokemon = get_Pokemon(name, lvl, cHP, nature, ability, item, evs)
     opp_name = makeCapitalString(opp_name)
-    opp_pokemon = get_opponent_info(opp_name, opp_cHP)
-
+    opp_pokemon_info = get_opponent_info(opp_name, opp_cHP)
+    opp_pokemon = opp_pokemon_info[0]
+    opp_pokemon_moveset = opp_pokemon_info[1]
     move1 = find_move_info(name, move1, move1_type, move1_category)
     move2 = find_move_info(name, move2, move2_type, move2_category)
     move3 = find_move_info(name, move3, move3_type, move3_category)
@@ -60,6 +93,12 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
     return move_chosen
 
 def get_opponent_info(opp_name, opp_cHP):
+    """
+    Gets opponent's pokemon and moveset
+    :param opp_name:
+    :param opp_cHP:
+    :return: tuple containing pokemon and moveset
+    """
     poke_sets = set_bw[opp_name]
     try:
         poke_data = pykemon.get(pokemon=opp_name.lower())
@@ -80,11 +119,20 @@ def get_opponent_info(opp_name, opp_cHP):
     pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
                       poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
                       poke_sType, poke_set['nature'], poke_set['ability'], poke_set['item'], poke_set['evs'])
+    opp_moveset = poke_set['moves']
     #print "Opponent Pokemon %s" %pokemon
-    return pokemon
+    return (pokemon, opp_moveset)
 
 
 def find_move_info(poke_name, move_name, move_type, move_category):
+    """
+    Gets your moves
+    :param poke_name:
+    :param move_name:
+    :param move_type:
+    :param move_category:
+    :return: move object
+    """
     makeCapitalString(move_name)
     try:
         poke_data = pykemon.get(pokemon=poke_name.lower())
@@ -110,6 +158,17 @@ def find_move_info(poke_name, move_name, move_type, move_category):
 
 
 def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
+    """
+    Gets pokemon info
+    :param name:
+    :param lvl:
+    :param cHP:
+    :param nature:
+    :param ability:
+    :param item:
+    :param evs:
+    :return: Pokemon object
+    """
     try:
         poke_data = pykemon.get(pokemon=name.lower())
     except KeyError:
@@ -148,6 +207,15 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     return pokemon
 
 def check_validity(lvl, cHP, ability, evs):
+
+    """
+    Checks info is valid
+    :param lvl:
+    :param cHP:
+    :param ability:
+    :param evs:
+    :return: True/False
+    """
     if lvl < 0 or lvl > 100:
         return False
     if cHP < 0 or cHP > 100:

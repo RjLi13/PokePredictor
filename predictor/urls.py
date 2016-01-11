@@ -1,5 +1,9 @@
 __author__ = 'ruijing'
 
+"""Urls are how views are called. By visiting an url which is matched by regex, you call the view function
+associated with it
+"""
+
 from django.conf.urls import url
 
 from . import views

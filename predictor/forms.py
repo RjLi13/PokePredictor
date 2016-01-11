@@ -2,6 +2,11 @@ __author__ = 'ruijing'
 from django import forms
 
 class PokeForm(forms.Form):
+    """
+    This is a forms class. Its purpose is to take fields characterized by Choice/Text/Ints and display
+    those fields to the user in a form. The user enters data into the form, which if filled correctly
+    will be stored into a dictionary form.cleaned_data
+    """
     nature_choices = [("Adamant", "Adamant"), ("Bashful", "Bashful"), ("Bold", "Bold"), ("Brave", "Brave"),
                       ("Calm", "Calm"), ("Careful", "Careful"), ("Docile", "Docile"), ("Gentle", "Gentle"),
                       ("Hardy", "Hardy"), ("Hasty", "Hasty"), ("Impish", "Impish"), ("Jolly", "Jolly"), ("Lax", "Lax"),
@@ -16,12 +21,12 @@ class PokeForm(forms.Form):
     name = forms.CharField(label='Your Pokemon name', max_length=30)
     level = forms.IntegerField(label='Your Pokemon level')
     current_HP = forms.IntegerField(label='Your Pokemon current HP (as percentage %)')
-    ev_hp = forms.IntegerField(label='Your Pokemon evs on HP', required=False)
-    ev_atk = forms.IntegerField(label='Your Pokemon evs on Atk', required=False)
-    ev_def = forms.IntegerField(label='Your Pokemon evs on Def', required=False)
-    ev_spatk = forms.IntegerField(label='Your Pokemon evs on Sp Atk', required=False)
-    ev_spdef = forms.IntegerField(label='Your Pokemon evs on Sp Def', required=False)
-    ev_speed = forms.IntegerField(label='Your Pokemon evs on Speed', required=False)
+    ev_hp = forms.IntegerField(label='Your Pokemon evs on HP (Optional)', required=False)
+    ev_atk = forms.IntegerField(label='Your Pokemon evs on Atk (Optional)', required=False)
+    ev_def = forms.IntegerField(label='Your Pokemon evs on Def (Optional)', required=False)
+    ev_spatk = forms.IntegerField(label='Your Pokemon evs on Sp Atk (Optional)', required=False)
+    ev_spdef = forms.IntegerField(label='Your Pokemon evs on Sp Def (Optional)', required=False)
+    ev_speed = forms.IntegerField(label='Your Pokemon evs on Speed (Optional)', required=False)
     num_pokemon = forms.IntegerField(label='How many pokemon left on your team (including this one) (Optional)', required=False)
     nature = forms.ChoiceField(choices=nature_choices, label=' Your Pokemon nature')
     ability = forms.CharField(label='Your Pokemon ability (Optional)', max_length=100, required=False)
