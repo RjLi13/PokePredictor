@@ -30,7 +30,7 @@ NATURES = {
 
 
 class Pokemon:
-    def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature, ability, item, evs):
+    def __init__(self, name, lvl, mHP, cHP, att, dfn, spA, spD, spe, pType, sType, nature='Serious', ability='none', item='none', evs={}):
 
         """
             name: 'pikachu'
@@ -121,7 +121,7 @@ class Pokemon:
 
 class Move:
     def __init__(self,
-        name, type, cat, pow, acc, eff, pp):
+        name, type, cat='Physical', pow=100, acc=100, eff='<blank>', pp=20):
         """
             name: 'Tackle'
             type: 'Normal'

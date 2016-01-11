@@ -1,17 +1,20 @@
+# all game strategy (choosing moves, choosing whether or not to switch)
+
+
 __author__ = 'ruijing and josh'
 
 
-import pykemon
+# import pykemon # RJ - I commented this out to compile with python3
 from pokemon import *
 from battle import *
-import json
-import urllib2
+# import json # RJ - I commented this out to compile with python3
+# import urllib2 # RJ - I commented this out to compile with python3
 import random
 
 DEFAULT = '<blank>'
 
-json_data = open('predictor/bw.json')
-set_bw = json.load(json_data)
+# json_data = open('predictor/bw.json') # RJ - I commented this out to compile with python3
+# set_bw = json.load(json_data) # RJ - I commented this out to compile with python3
 
 # json_data = open('predictor/dpp.json')
 # set_dpp = json.load(json_data)
@@ -229,3 +232,134 @@ def check_validity(lvl, cHP, ability, evs):
         return False
     return True
 
+
+############ Logic for switching ############
+
+
+# magic number - determining when we should switch
+SWITCH_THRESH = -0.2
+
+
+def should_switch(att_poke, def_poke):
+    """ Returns T/F depending of favorability of current matchup
+        based on types of attacker and defender
+
+        example - Charmander should switch out if against a Squirtle (rating of -0.25) 
+                - Charmander should not switch out against a Caterpie (rating of 0.375)
+    """
+    if eval_matchup(att_poke, def_poke) < SWITCH_THRESH:
+        return True
+    return False
+
+    # Alternate logic - requires more processing - consider for later version
+    # if bad_matchup:
+    #     if pokemon speed faster:
+    #         if dmg > dmg opponent does and calculate_survial() for one turn
+    #             return false
+    #         return true0
+    #     else
+    #         calculate survival() 
+    #         if you deal dmg > dmg they do and survive turns > opp survival
+    #             return false
+    #         return true
+    
+    # if bad_matchup(att_poke, def_poke):
+    #     if att_poke.spe > def_poke.spe: # we are faster than enemy
+
+
+
+
+
+def eval_matchup(att_poke, def_poke):
+    """Return value depending on how good attacker is against the defender
+        Notes:
+            1 - great for attacker (we have a double super effective move, they can't hurt us)
+            0 - neutral
+            -1 - terrible for attacker (i.e attacker can't deal any damage) (bad)
+                Almost all evaluations will be somewhat close to 0
+            
+            Will give more precise evaluations in future versions 
+
+        Formula (Ruijing and Josh's unofficial estimation of a matchup) (should improve in later version):
+            (Effectiveness of attacker's best move - Effectiveness of defender's type against attacker's type) / 4
+
+            Example calculations:
+                
+                Charmander (Fire) vs Caterpie (Bug)
+                 * Charmander's Ember is super effective against Bug (given a 2)
+                 * Bug is 1/2 effective vs Fire 
+                 * Total Rating: (2 - 1/2) / 4 = 1.5 / 4 = 0.375 (very good)               
+
+                Charmander (Fire) vs Paras (Bug / Grass)
+                 * Charmander's Ember is super effective against both Bug and Grass (given a 4)
+                 * Bug is 1/2 effective vs Fire AND Grass is 1/2 effective vs Fire - we average them to get a 1/2
+                 * Total Rating: (4 - 1/2) / 4 = 3.5 / 4 = 0.875 (extremely good)
+
+                Charmander (Fire) vs Squirtle (Water)
+                 * Charmander's Tackle is Normally effective against Water (given a 1)
+                 * Water is x2 effective vs Fire
+                 * Total Rating: (1 - 2) / 4 = -1 / 4 = -0.25 (bad)
+                     --- even though Charmander optimally uses Tackle, a normal type move, still a bad matchup
+        """
+        
+        # alternative idea - base it on the optimal move... worth considering for a later version
+            # optimal_move = choose_move(att_poke.name, att_poke.lvl, att_poke.cHP, att_poke.nature, att_poke.ability, def_poke.name, def_poke.cHP,
+            #         att_poke.moves[0], att_poke.moves[1], att_poke.moves[2], att_poke.moves[3], move1_type, move2_type, move3_type, move4_type, move1_category,
+            #         move2_category, move3_category, move4_category, item, num_pokemon, opp_num_pokemon, evs)
+            # I'm not sure how to get the optimal move from this frame - we don't have enough information
+            # optimal_move = att_poke.moves[0] # temp - take the first move
+            # first check - do we have a super effective *damage* move against the defending pokemon?
+
+    attack_rating = 0
+
+    # PUT THIS BACK ONCE WE CAN GET THE POKEMON'S MOVESSSS 
+    # for move in att_poke.moves:
+    #     if move.cat != "Status":
+    #         sample_attack = Attack(att_poke, def_poke, move)
+    #         effectiveness = sample_attack.find_effectiveness() 
+    #         if effectiveness > most_effective:
+    #             attack_rating = effectiveness
+
+    # temporary fix
+    attack_rating_p = Attack(att_poke, def_poke, Move('test', att_poke.pType))
+    attack_rating_s = Attack(att_poke, def_poke, Move('test', att_poke.sType))
+    attack_rating = (attack_rating_p.find_effectiveness() + attack_rating_s.find_effectiveness()) / 2.0
+
+    # ideal 'defense ratings' are low - meaning the enemy does not do much damage         
+    sample_defense_p = Attack(def_poke, att_poke, Move('test', def_poke.pType))
+    sample_defense_s = Attack(def_poke, att_poke, Move('test', def_poke.sType))
+    defense_rating = (sample_defense_p.find_effectiveness() + sample_defense_s.find_effectiveness()) / 2.0
+
+    return (attack_rating - defense_rating) / 4
+
+
+# defaults
+DEFAULT = '<blank>'
+DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
+DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT)
+
+# moves 
+tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
+tail_whip = Move('Tail Whip', 'Normal', 'Status', 0, 30, 'Lowers Opponent\'s Defense')
+water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
+thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
+thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
+
+# pokemon
+pikachu = Pokemon('Pikachu', 10, 35, 35, 55, 40, 50, 50, 90, 'electric', 'electric')
+squirtle = Pokemon('Squirtle', 10, 44, 44, 48, 65, 50, 64, 43, 'water', 'water')
+
+
+# for testing
+def report_switch(att_poke, def_poke):
+    print("======")
+    print(">>> " + att_poke.name + " has a rating of " + str(eval_matchup(att_poke, def_poke)) + " vs enemy " + def_poke.name)
+    if should_switch(att_poke, def_poke):
+        print(">>> SWITCH")   
+    else:
+        print(">>> Do not switch")
+
+report_switch(squirtle, squirtle)
+report_switch(pikachu, squirtle)
+report_switch(squirtle, pikachu)
+report_switch(pikachu, pikachu)
