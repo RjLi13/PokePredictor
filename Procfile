@@ -1,1 +1,1 @@
- web: gunicorn PokePredictor.wsgi --log-file -
+web: gunicorn PokePredictor.wsgi --log-file -
