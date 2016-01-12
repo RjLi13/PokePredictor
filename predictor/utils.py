@@ -4,7 +4,7 @@
 __author__ = 'ruijing and josh'
 
 
-import pykemon # RJ - I commented this out to compile with python3
+# import pykemon # RJ - I commented this out to compile with python3
 from pokemon import *
 from battle import *
 import json # RJ - I commented this out to compile with python3
@@ -116,6 +116,7 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
         return ("Switch", 0)
     return (move_chosen.name, dmg_done)
 
+
 def reverse_sort_moves(moves):
     unsorted = []
     dict = {}
@@ -148,7 +149,8 @@ def get_opponent_info(opp_name, opp_cHP):
     """
     poke_sets = set_bw[opp_name]
     try:
-        poke_data = pykemon.get(pokemon=opp_name.lower())
+        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + opp_name.lower()))
+        # poke_data = pykemon.get(pokemon=opp_name.lower())
     except KeyError:
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
@@ -158,13 +160,18 @@ def get_opponent_info(opp_name, opp_cHP):
     index = random.randint(0, len(poke_sets_keys)-1)
     poke_set_key = poke_sets_keys[index]
     poke_set = poke_sets[poke_set_key]
-    poke_types = poke_data.types
-    poke_pType = poke_types.keys()[0]
+    poke_types = poke_data['types']
+    # poke_pType = poke_types.keys()[0]
+    poke_pType = poke_types[0]['name']
     poke_sType = poke_pType
     if len(poke_types) == 2:
-        poke_pType = poke_types.keys()[1]
-    pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
-                      poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
+        # poke_pType = poke_types.keys()[1]
+        poke_pType = poke_types[1]['name']
+    # pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
+    #                   poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
+    #                   poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
+    pokemon = Pokemon(opp_name, poke_set['level'], poke_data['hp'], opp_cHP, poke_data['attack'],
+                      poke_data['defense'], poke_data['sp_atk'], poke_data['sp_def'], poke_data['speed'], poke_pType,
                       poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
     opp_moveset = poke_set['moves']
     # print "Opponent Pokemon %s" %pokemon
@@ -183,22 +190,30 @@ def find_move_info(poke_name, move_name, move_type='Normal', move_category='Phys
     """
     makeCapitalString(move_name)
     try:
-        poke_data = pykemon.get(pokemon=poke_name.lower())
+        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + poke_name.lower()))
+        # print poke_data
+        # poke_data = pykemon.get(pokemon=poke_name.lower())
     except KeyError:
         DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT, DEFAULT)
         return DEFAULT_MOVE
-    moves = poke_data.moves
-    if move_name in moves:
-        get_info = moves[move_name]
-        get_info = str(get_info)
-        strlen = len(get_info)
-        move_id = get_info[13:strlen-1]
-        move_id = int(move_id)
-        move_data = pykemon.get(move_id=move_id)
-        data = json.load(urllib2.urlopen('http://pokeapi.co/api/v1/move/' + str(move_id)))
-        description = data['description']
-        return Move(move_data.name, move_type, move_category, move_data.power, move_data.accuracy,
-                    description, move_data.pp)
+    #moves = poke_data.moves
+    moves = poke_data['moves']
+    for move in moves:
+        if move_name in move.values():
+            # get_info = moves[move_name]
+            get_info = move['resource_uri']
+            get_info = str(get_info)
+            strlen = len(get_info)
+            move_id = get_info[13:strlen-1]
+            move_id = int(move_id)
+            # print move_id
+            # move_data = pykemon.get(move_id=move_id)
+            data = json.load(urllib2.urlopen('http://pokeapi.co/api/v1/move/' + str(move_id)))
+            description = data['description']
+            # return Move(move_data.name, move_type, move_category, move_data.power, move_data.accuracy,
+            #             description, move_data.pp)
+            return Move(data['name'], move_type, move_category, data['power'], data['accuracy'],
+                        description, data['pp'])
     else:
         DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT, DEFAULT)
         return DEFAULT_MOVE
@@ -218,7 +233,8 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     :return: Pokemon object
     """
     try:
-        poke_data = pykemon.get(pokemon=name.lower())
+        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + name.lower()))
+        # poke_data = pykemon.get(pokemon=name.lower())
     except KeyError:
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
@@ -226,19 +242,29 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     if not check_validity(lvl, cHP, ability, evs):
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
-    poke_name = poke_data.name
-    poke_atk = poke_data.attack
-    poke_def = poke_data.defense
-    poke_spatk = poke_data.sp_atk
-    poke_spdef = poke_data.sp_def
-    poke_speed = poke_data.speed
-    poke_types = poke_data.types
-    poke_pType = poke_types.keys()[0]
+    # poke_name = poke_data.name
+    # poke_atk = poke_data.attack
+    # poke_def = poke_data.defense
+    # poke_spatk = poke_data.sp_atk
+    # poke_spdef = poke_data.sp_def
+    # poke_speed = poke_data.speed
+    # poke_types = poke_data.types
+    # poke_mHP = poke_data.hp
+    poke_name = poke_data['name']
+    poke_atk = poke_data['attack']
+    poke_def = poke_data['defense']
+    poke_spatk = poke_data['sp_atk']
+    poke_spdef = poke_data['sp_def']
+    poke_speed = poke_data['speed']
+    poke_types = poke_data['types']
+    poke_mHP = poke_data['hp']
+    poke_pType = poke_types[0]['name']
     poke_sType = poke_pType
     if len(poke_types) == 2:
-        poke_pType = poke_types.keys()[1]
+        # poke_pType = poke_types.keys()[1]
+        poke_pType = poke_types[1]['name']
     poke_lvl = lvl
-    poke_mHP = poke_data.hp
+
     poke_cHP = cHP
     if not nature:
         nature = DEFAULT
