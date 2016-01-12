@@ -10,10 +10,13 @@ from battle import *
 import json # RJ - I commented this out to compile with python3
 import urllib2 # RJ - I commented this out to compile with python3
 import random
+import os
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT = '<blank>'
 
-json_data = open('predictor/bw.json') # RJ - I commented this out to compile with python3
+json_data = open(os.path.join(BASE_DIR, 'predictor/bw.json')) # RJ - I commented this out to compile with python3
 set_bw = json.load(json_data) # RJ - I commented this out to compile with python3
 
 # json_data = open('predictor/dpp.json')
