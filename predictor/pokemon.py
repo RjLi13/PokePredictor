@@ -79,7 +79,7 @@ class Pokemon:
         self.mHP = ((mHP * 2 + iv + evs['hp']//4) * lvl / 100) + 10 + lvl
         if name.lower() == 'shedinja':
             self.mHP = 1
-        self.cHP = cHP / 100 * self.mHP
+        self.cHP = float(cHP) / 100 * self.mHP
         STATS = {
             'at': self.att,
             'df': self.dfn,
@@ -121,7 +121,7 @@ class Pokemon:
 
 class Move:
     def __init__(self,
-        name, type, cat='Physical', pow=100, acc=100, eff='<blank>', pp=20):
+        name, type, cat='Physical', pow=90, acc=100, eff='<blank>', pp=20):
         """
             name: 'Tackle'
             type: 'Normal'

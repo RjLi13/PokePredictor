@@ -85,6 +85,11 @@ class Attack:
     def find_other(self):
         """factor for other effects such as items, abilities, field advantages... etc
            will implement phase 2 """ # FIX
+        item = self.att_poke.item.lower()
+        if len(item) > 7 and item[0:6] == 'choice' and item != 'choice scarf':
+            return 2
+        if item == 'life orb':
+            return 1.3
         return 1
 
     def find_rand(self):
@@ -110,7 +115,7 @@ class Attack:
                         self.find_other() * self.find_rand())
         # print(base_damage, modifier)
         damage = int(base_damage*modifier)
-        self.def_poke.cHP -= damage
+        # self.def_poke.cHP -= damage
         return damage
 
     def report_results(self, damage):

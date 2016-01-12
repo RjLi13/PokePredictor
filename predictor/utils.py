@@ -4,17 +4,17 @@
 __author__ = 'ruijing and josh'
 
 
-# import pykemon # RJ - I commented this out to compile with python3
+import pykemon # RJ - I commented this out to compile with python3
 from pokemon import *
 from battle import *
-# import json # RJ - I commented this out to compile with python3
-# import urllib2 # RJ - I commented this out to compile with python3
+import json # RJ - I commented this out to compile with python3
+import urllib2 # RJ - I commented this out to compile with python3
 import random
 
 DEFAULT = '<blank>'
 
-# json_data = open('predictor/bw.json') # RJ - I commented this out to compile with python3
-# set_bw = json.load(json_data) # RJ - I commented this out to compile with python3
+json_data = open('predictor/bw.json') # RJ - I commented this out to compile with python3
+set_bw = json.load(json_data) # RJ - I commented this out to compile with python3
 
 # json_data = open('predictor/dpp.json')
 # set_dpp = json.load(json_data)
@@ -80,20 +80,61 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
     opp_pokemon_info = get_opponent_info(opp_name, opp_cHP)
     opp_pokemon = opp_pokemon_info[0]
     opp_pokemon_moveset = opp_pokemon_info[1]
+    opp_moves = []
+    for move in opp_pokemon_moveset:
+        opp_moves.append(find_move_info(opp_pokemon.name, move, opp_pokemon.pType))
+        opp_moves.append(find_move_info(opp_pokemon.name, move, opp_pokemon.sType))
     move1 = find_move_info(name, move1, move1_type, move1_category)
     move2 = find_move_info(name, move2, move2_type, move2_category)
     move3 = find_move_info(name, move3, move3_type, move3_category)
     move4 = find_move_info(name, move4, move4_type, move4_category)
     moves = [move1, move2, move3, move4]
-    dmg = 0
+    dmg = -1
+    dmg_done = 0
     move_chosen = None
+    moves = reverse_sort_moves(moves)
     for move in moves:
         # print move
         new_dmg = Attack(pokemon, opp_pokemon, move).find_damage()
-        if new_dmg > dmg or (new_dmg == dmg and move.acc > move_chosen.acc):
+        if (new_dmg > dmg or (new_dmg == dmg and move.acc > move_chosen.acc)):
             move_chosen = move
             dmg = new_dmg
-    return move_chosen
+            dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - float(opp_pokemon.cHP-dmg)/opp_pokemon.mHP * 100
+        elif move.acc > move_chosen.acc and move.acc >= 80:
+            temp_dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - \
+                           float(opp_pokemon.cHP-new_dmg)/opp_pokemon.mHP * 100
+            if temp_dmg_done > 60 or opp_cHP < 30:
+                move_chosen = move
+                dmg = new_dmg
+                dmg_done = temp_dmg_done
+    if not num_pokemon:
+        num_pokemon = 6
+    if should_switch(opp_pokemon, pokemon, opp_moves, num_pokemon, move_chosen):
+        return ("Switch", 0)
+    return (move_chosen.name, dmg_done)
+
+def reverse_sort_moves(moves):
+    unsorted = []
+    dict = {}
+    sorted = [None, None, None, None]
+    for move in moves:
+        unsorted.append(move.pow)
+        dict[move] = move.pow
+
+    for index in range(0, len(unsorted) - 1):
+        for second in range(index, len(unsorted)):
+            if unsorted[second] > unsorted[index]:
+                temp = unsorted[index]
+                unsorted[index] = unsorted[second]
+                unsorted[second] = temp
+
+
+    for key, value in dict.items():
+        for index in range(0, len(unsorted)):
+            if value == unsorted[index]:
+                sorted[index] = key
+    return sorted
+
 
 def get_opponent_info(opp_name, opp_cHP):
     """
@@ -121,13 +162,14 @@ def get_opponent_info(opp_name, opp_cHP):
         poke_pType = poke_types.keys()[1]
     pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
                       poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
-                      poke_sType, poke_set['nature'], poke_set['ability'], poke_set['item'], poke_set['evs'])
+                      poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
     opp_moveset = poke_set['moves']
-    #print "Opponent Pokemon %s" %pokemon
+    # print "Opponent Pokemon %s" %pokemon
+    # print opp_moveset
     return (pokemon, opp_moveset)
 
 
-def find_move_info(poke_name, move_name, move_type, move_category):
+def find_move_info(poke_name, move_name, move_type='Normal', move_category='Physical'):
     """
     Gets your moves
     :param poke_name:
@@ -206,7 +248,7 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     pokemon = Pokemon(poke_name, poke_lvl, poke_mHP, poke_cHP, poke_atk,
                       poke_def, poke_spatk, poke_spdef, poke_speed, poke_pType,
                       poke_sType, poke_nature, poke_ability, item, evs)
-    print "My Pokemon %s" %pokemon
+    # print "My Pokemon %s" %pokemon
     return pokemon
 
 def check_validity(lvl, cHP, ability, evs):
@@ -237,17 +279,17 @@ def check_validity(lvl, cHP, ability, evs):
 
 
 # magic number - determining when we should switch
-SWITCH_THRESH = -0.2
+SWITCH_THRESH = 0
 
 
-def should_switch(att_poke, def_poke):
+def should_switch(att_poke, def_poke, att_moves, num_pokemon, def_move):
     """ Returns T/F depending of favorability of current matchup
         based on types of attacker and defender
 
         example - Charmander should switch out if against a Squirtle (rating of -0.25) 
                 - Charmander should not switch out against a Caterpie (rating of 0.375)
     """
-    if eval_matchup(att_poke, def_poke) < SWITCH_THRESH:
+    if eval_matchup(att_poke, def_poke, att_moves, def_move) > SWITCH_THRESH and num_pokemon > 1:
         return True
     return False
 
@@ -270,7 +312,7 @@ def should_switch(att_poke, def_poke):
 
 
 
-def eval_matchup(att_poke, def_poke):
+def eval_matchup(att_poke, def_poke, att_moves, def_move):
     """Return value depending on how good attacker is against the defender
         Notes:
             1 - great for attacker (we have a double super effective move, they can't hurt us)
@@ -313,41 +355,39 @@ def eval_matchup(att_poke, def_poke):
     attack_rating = 0
 
     # PUT THIS BACK ONCE WE CAN GET THE POKEMON'S MOVESSSS 
-    # for move in att_poke.moves:
-    #     if move.cat != "Status":
-    #         sample_attack = Attack(att_poke, def_poke, move)
-    #         effectiveness = sample_attack.find_effectiveness() 
-    #         if effectiveness > most_effective:
-    #             attack_rating = effectiveness
-
+    for move in att_moves:
+        if move.cat != "Status":
+            sample_attack = Attack(att_poke, def_poke, move)
+            effectiveness = sample_attack.find_damage()
+            if effectiveness > attack_rating:
+                attack_rating = effectiveness
     # temporary fix
-    attack_rating_p = Attack(att_poke, def_poke, Move('test', att_poke.pType))
-    attack_rating_s = Attack(att_poke, def_poke, Move('test', att_poke.sType))
-    attack_rating = (attack_rating_p.find_effectiveness() + attack_rating_s.find_effectiveness()) / 2.0
+    # attack_rating_p = Attack(att_poke, def_poke, Move('test', att_poke.pType))
+    # attack_rating_s = Attack(att_poke, def_poke, Move('test', att_poke.sType))
+    # attack_rating = (attack_rating_p.find_effectiveness() + attack_rating_s.find_effectiveness()) / 2.0
+    #
+    # # ideal 'defense ratings' are low - meaning the enemy does not do much damage
+    defense_strat = Attack(def_poke, att_poke, def_move)
+    defense_rating = defense_strat.find_damage()
 
-    # ideal 'defense ratings' are low - meaning the enemy does not do much damage         
-    sample_defense_p = Attack(def_poke, att_poke, Move('test', def_poke.pType))
-    sample_defense_s = Attack(def_poke, att_poke, Move('test', def_poke.sType))
-    defense_rating = (sample_defense_p.find_effectiveness() + sample_defense_s.find_effectiveness()) / 2.0
-
-    return (attack_rating - defense_rating) / 4
+    return (attack_rating - defense_rating) / 4.0
 
 
 # defaults
-DEFAULT = '<blank>'
-DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
-DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT)
-
-# moves 
-tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
-tail_whip = Move('Tail Whip', 'Normal', 'Status', 0, 30, 'Lowers Opponent\'s Defense')
-water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
-thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
-thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
-
-# pokemon
-pikachu = Pokemon('Pikachu', 10, 35, 35, 55, 40, 50, 50, 90, 'electric', 'electric')
-squirtle = Pokemon('Squirtle', 10, 44, 44, 48, 65, 50, 64, 43, 'water', 'water')
+# DEFAULT = '<blank>'
+# DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT)
+# DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT)
+#
+# # moves
+# tackle = Move('Tackle', 'Normal', 'Physical', 50, 100, DEFAULT)
+# tail_whip = Move('Tail Whip', 'Normal', 'Status', 0, 30, 'Lowers Opponent\'s Defense')
+# water_gun = Move('Water Gun', 'Water', 'Special', 40, 100, DEFAULT)
+# thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
+# thunder_shock = Move('Thunder Shock', 'electric', 'Special', 40, 100, 'May paralyze opponent')
+#
+# # pokemon
+# pikachu = Pokemon('Pikachu', 10, 35, 35, 55, 40, 50, 50, 90, 'electric', 'electric')
+# squirtle = Pokemon('Squirtle', 10, 44, 44, 48, 65, 50, 64, 43, 'water', 'water')
 
 
 # for testing
@@ -359,7 +399,7 @@ def report_switch(att_poke, def_poke):
     else:
         print(">>> Do not switch")
 
-report_switch(squirtle, squirtle)
-report_switch(pikachu, squirtle)
-report_switch(squirtle, pikachu)
-report_switch(pikachu, pikachu)
+# report_switch(squirtle, squirtle)
+# report_switch(pikachu, squirtle)
+# report_switch(squirtle, pikachu)
+# report_switch(pikachu, pikachu)

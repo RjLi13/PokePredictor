@@ -28,7 +28,11 @@ def query(request):
         if form.is_valid():
             name = form.cleaned_data['name']
             lvl = form.cleaned_data['level']
+            if not lvl:
+                lvl = 100
             cHP = form.cleaned_data['current_HP']
+            if not cHP:
+                cHP = 100
             nature = form.cleaned_data['nature']
             ability = form.cleaned_data['ability']
             item = form.cleaned_data['item']
@@ -65,6 +69,8 @@ def query(request):
                 evs['sp'] = ev_speed
             opp_name = form.cleaned_data['opp_name']
             opp_cHP = form.cleaned_data['opp_current_HP']
+            if not opp_cHP:
+                opp_cHP = 100
             num_pokemon = form.cleaned_data['num_pokemon']
             opp_num_pokemon = form.cleaned_data['opp_num_pokemon']
             # TODO incorporate opponent info into this
@@ -91,7 +97,7 @@ def query(request):
             move = choose_move(name,lvl, cHP, nature, ability, opp_name, opp_cHP,
                                move1, move2, move3, move4, move1_type, move2_type, move3_type, move4_type, move1_category,
                                move2_category, move3_category, move4_category, item, num_pokemon, opp_num_pokemon, evs)
-            return HttpResponse(move)
+            return HttpResponse("You should %s and deal %s %% of opponent's hp" %(move[0], move[1]))
     else:
         form = PokeForm()
     return render(request, 'predictor/pokeform.html', {'form': form})
