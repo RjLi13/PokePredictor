@@ -1,5 +1,6 @@
 construct==2.5.2
 Django==1.9
+gunicorn==19.4.5
 Markdown==2.6.5
 pykemon==0.1.2
 requests==2.0.1
