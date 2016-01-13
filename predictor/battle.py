@@ -87,7 +87,7 @@ class Attack:
            will implement phase 2 """ # FIX
         item = self.att_poke.item.lower()
         if len(item) > 7 and item[0:6] == 'choice' and item != 'choice scarf':
-            return 2
+            return 1.5
         if item == 'life orb':
             return 1.3
         return 1

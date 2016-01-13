@@ -152,3 +152,13 @@ class Move:
             '\n PP: ' + str(self.pp) + \
             '\n================'
 
+    def __hash__(self):
+        return hash((31 ^ len(self.name) * len(self.type) * len(self.cat) * self.pow + 7 ^ self.acc) << 13)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.name == other.name
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

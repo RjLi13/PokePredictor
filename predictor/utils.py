@@ -4,7 +4,7 @@
 __author__ = 'ruijing and josh'
 
 
-# import pykemon # RJ - I commented this out to compile with python3
+import pykemon # RJ - I commented this out to compile with python3
 from pokemon import *
 from battle import *
 import json # RJ - I commented this out to compile with python3
@@ -92,53 +92,103 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
     move3 = find_move_info(name, move3, move3_type, move3_category)
     move4 = find_move_info(name, move4, move4_type, move4_category)
     moves = [move1, move2, move3, move4]
-    dmg = -1
-    dmg_done = 0
-    move_chosen = None
-    moves = reverse_sort_moves(moves)
+    moves = reverse_sort_moves(pokemon, opp_pokemon, moves)
+    status_moves = []
     for move in moves:
-        # print move
-        new_dmg = Attack(pokemon, opp_pokemon, move).find_damage()
-        if (new_dmg > dmg or (new_dmg == dmg and move.acc > move_chosen.acc)):
-            move_chosen = move
+        if move.cat == 'Status':
+            status_moves.append(move)
+    move_chosen = moves[0]
+    dmg = Attack(pokemon, opp_pokemon, move_chosen).find_damage()
+    dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - float(opp_pokemon.cHP-dmg)/opp_pokemon.mHP * 100
+    alt_move = moves[1]
+    new_dmg = Attack(pokemon, opp_pokemon, alt_move).find_damage()
+    if alt_move.acc > move_chosen.acc and alt_move.acc >= 80:
+        temp_dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - \
+                       float(opp_pokemon.cHP-new_dmg)/opp_pokemon.mHP * 100
+        if temp_dmg_done > 60 or opp_cHP < 30:
+            move_chosen = alt_move
             dmg = new_dmg
-            dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - float(opp_pokemon.cHP-dmg)/opp_pokemon.mHP * 100
-        elif move.acc > move_chosen.acc and move.acc >= 80:
-            temp_dmg_done = float(opp_pokemon.cHP)/opp_pokemon.mHP * 100 - \
-                           float(opp_pokemon.cHP-new_dmg)/opp_pokemon.mHP * 100
-            if temp_dmg_done > 60 or opp_cHP < 30:
-                move_chosen = move
-                dmg = new_dmg
-                dmg_done = temp_dmg_done
+            dmg_done = temp_dmg_done
     if not num_pokemon:
         num_pokemon = 6
-    if should_switch(opp_pokemon, pokemon, opp_moves, num_pokemon, move_chosen):
+    if should_switch(opp_pokemon, pokemon, opp_moves, num_pokemon, dmg):
         return ("Switch", 0)
+    if cHP > 85 and dmg_done < 60 and opp_cHP > 50 and len(status_moves) > 0:
+        if len(item) <= 7 or len(item) > 7 and item[0:6] != 'choice':
+            index = random.randint(0, len(status_moves)-1)
+            return (status_moves[index].name, 0)
     return (move_chosen.name, dmg_done)
 
 
-def reverse_sort_moves(moves):
+def reverse_sort_moves(pokemon, opp_pokemon, moves):
     unsorted = []
     dict = {}
     sorted = [None, None, None, None]
     for move in moves:
-        unsorted.append(move.pow)
-        dict[move] = move.pow
+        dmg = Attack(pokemon, opp_pokemon, move).find_damage()
+        if move in dict:
+            old_dmg = dict[move]
+            if old_dmg < dmg:
+                dict[move] = dmg
+                unsorted.remove(old_dmg)
+                unsorted.append(dmg)
+        else:
+            dict[move] = dmg
+            unsorted.append(dmg)
 
-    for index in range(0, len(unsorted) - 1):
-        for second in range(index, len(unsorted)):
-            if unsorted[second] > unsorted[index]:
-                temp = unsorted[index]
-                unsorted[index] = unsorted[second]
-                unsorted[second] = temp
-
-
+    unsorted = my_sort(unsorted)
+    # print len(unsorted)
     for key, value in dict.items():
         for index in range(0, len(unsorted)):
             if value == unsorted[index]:
                 sorted[index] = key
     return sorted
 
+
+def my_sort(array):
+    if len(array) > 5:
+        random.shuffle(array)
+        quick_sort(array, 0, len(array) - 1)
+    else:
+        array = insert_sort(array)
+    return array
+
+
+def insert_sort(array):
+    for i in range(1, len(array)):
+        for j in range(i, 0, -1):
+            if array[j] > array[j-1]:
+                swap(array, j, j-1)
+    return array
+
+
+def quick_sort(array, low, high):
+    if low < high:
+        pivot = partition(array, low, high)
+        quick_sort(array, low, pivot)
+        quick_sort(array, pivot+1, high)
+
+
+def partition(array, low, high):
+    pivot = array[low]
+    i = low -1
+    j = high + 1
+    while 1:
+        j -= 1
+        while array[j] < pivot:
+            j -= 1
+        i += 1
+        while array[i] > pivot:
+            i += 1
+        if i < j:
+            swap(array, i, j)
+        else:
+            return j
+
+def swap(array, i, j):
+    temp = array[j]
+    array[j] = array[i]
+    array[i] = temp
 
 def get_opponent_info(opp_name, opp_cHP):
     """
@@ -149,8 +199,8 @@ def get_opponent_info(opp_name, opp_cHP):
     """
     poke_sets = set_bw[opp_name]
     try:
-        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + opp_name.lower()))
-        # poke_data = pykemon.get(pokemon=opp_name.lower())
+        # poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + opp_name.lower()))
+        poke_data = pykemon.get(pokemon=opp_name.lower())
     except KeyError:
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
@@ -160,19 +210,20 @@ def get_opponent_info(opp_name, opp_cHP):
     index = random.randint(0, len(poke_sets_keys)-1)
     poke_set_key = poke_sets_keys[index]
     poke_set = poke_sets[poke_set_key]
-    poke_types = poke_data['types']
-    # poke_pType = poke_types.keys()[0]
-    poke_pType = poke_types[0]['name']
+    # poke_types = poke_data['types']
+    poke_types = poke_data.types
+    poke_pType = poke_types.keys()[0]
+    # poke_pType = poke_types[0]['name']
     poke_sType = poke_pType
     if len(poke_types) == 2:
-        # poke_pType = poke_types.keys()[1]
-        poke_pType = poke_types[1]['name']
-    # pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
-    #                   poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
-    #                   poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
-    pokemon = Pokemon(opp_name, poke_set['level'], poke_data['hp'], opp_cHP, poke_data['attack'],
-                      poke_data['defense'], poke_data['sp_atk'], poke_data['sp_def'], poke_data['speed'], poke_pType,
+        poke_pType = poke_types.keys()[1]
+        # poke_pType = poke_types[1]['name']
+    pokemon = Pokemon(opp_name, poke_set['level'], poke_data.hp, opp_cHP, poke_data.attack,
+                      poke_data.defense, poke_data.sp_atk, poke_data.sp_def, poke_data.speed, poke_pType,
                       poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
+    # pokemon = Pokemon(opp_name, poke_set['level'], poke_data['hp'], opp_cHP, poke_data['attack'],
+    #                   poke_data['defense'], poke_data['sp_atk'], poke_data['sp_def'], poke_data['speed'], poke_pType,
+    #                   poke_sType, poke_set['nature'], DEFAULT, poke_set['item'], poke_set['evs'])
     opp_moveset = poke_set['moves']
     # print "Opponent Pokemon %s" %pokemon
     # print opp_moveset
@@ -190,30 +241,31 @@ def find_move_info(poke_name, move_name, move_type='Normal', move_category='Phys
     """
     makeCapitalString(move_name)
     try:
-        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + poke_name.lower()))
+        # poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + poke_name.lower()))
         # print poke_data
-        # poke_data = pykemon.get(pokemon=poke_name.lower())
+        poke_data = pykemon.get(pokemon=poke_name.lower())
     except KeyError:
         DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT, DEFAULT)
         return DEFAULT_MOVE
-    #moves = poke_data.moves
-    moves = poke_data['moves']
-    for move in moves:
-        if move_name in move.values():
-            # get_info = moves[move_name]
-            get_info = move['resource_uri']
-            get_info = str(get_info)
-            strlen = len(get_info)
-            move_id = get_info[13:strlen-1]
-            move_id = int(move_id)
-            # print move_id
-            # move_data = pykemon.get(move_id=move_id)
-            data = json.load(urllib2.urlopen('http://pokeapi.co/api/v1/move/' + str(move_id)))
-            description = data['description']
-            # return Move(move_data.name, move_type, move_category, move_data.power, move_data.accuracy,
-            #             description, move_data.pp)
-            return Move(data['name'], move_type, move_category, data['power'], data['accuracy'],
-                        description, data['pp'])
+    moves = poke_data.moves
+    # moves = poke_data['moves']
+    # for move in moves:
+    #     if move_name in move.values():
+    if move_name in moves:
+        get_info = moves[move_name]
+        # get_info = move['resource_uri']
+        get_info = str(get_info)
+        strlen = len(get_info)
+        move_id = get_info[13:strlen-1]
+        move_id = int(move_id)
+        # print move_id
+        # move_data = pykemon.get(move_id=move_id)
+        data = json.load(urllib2.urlopen('http://pokeapi.co/api/v1/move/' + str(move_id)))
+        description = data['description']
+        # return Move(move_data.name, move_type, move_category, move_data.power, move_data.accuracy,
+        #             description, move_data.pp)
+        return Move(data['name'], move_type, move_category, data['power'], data['accuracy'],
+                    description, data['pp'])
     else:
         DEFAULT_MOVE = Move(DEFAULT, DEFAULT, DEFAULT, 0, 100, DEFAULT, DEFAULT)
         return DEFAULT_MOVE
@@ -233,8 +285,8 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     :return: Pokemon object
     """
     try:
-        poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + name.lower()))
-        # poke_data = pykemon.get(pokemon=name.lower())
+        # poke_data = json.load(urllib2.urlopen("http://pokeapi.co/api/v1/pokemon/" + name.lower()))
+        poke_data = pykemon.get(pokemon=name.lower())
     except KeyError:
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
@@ -242,27 +294,28 @@ def get_Pokemon(name, lvl, cHP, nature, ability, item, evs):
     if not check_validity(lvl, cHP, ability, evs):
         DEFAULT_POKEMON = Pokemon(DEFAULT, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, {})
         return DEFAULT_POKEMON
-    # poke_name = poke_data.name
-    # poke_atk = poke_data.attack
-    # poke_def = poke_data.defense
-    # poke_spatk = poke_data.sp_atk
-    # poke_spdef = poke_data.sp_def
-    # poke_speed = poke_data.speed
-    # poke_types = poke_data.types
-    # poke_mHP = poke_data.hp
-    poke_name = poke_data['name']
-    poke_atk = poke_data['attack']
-    poke_def = poke_data['defense']
-    poke_spatk = poke_data['sp_atk']
-    poke_spdef = poke_data['sp_def']
-    poke_speed = poke_data['speed']
-    poke_types = poke_data['types']
-    poke_mHP = poke_data['hp']
-    poke_pType = poke_types[0]['name']
+    poke_name = poke_data.name
+    poke_atk = poke_data.attack
+    poke_def = poke_data.defense
+    poke_spatk = poke_data.sp_atk
+    poke_spdef = poke_data.sp_def
+    poke_speed = poke_data.speed
+    poke_types = poke_data.types
+    poke_mHP = poke_data.hp
+    # poke_name = poke_data['name']
+    # poke_atk = poke_data['attack']
+    # poke_def = poke_data['defense']
+    # poke_spatk = poke_data['sp_atk']
+    # poke_spdef = poke_data['sp_def']
+    # poke_speed = poke_data['speed']
+    # poke_types = poke_data['types']
+    # poke_mHP = poke_data['hp']
+    # poke_pType = poke_types[0]['name']
+    poke_pType = poke_types.keys()[0]
     poke_sType = poke_pType
     if len(poke_types) == 2:
-        # poke_pType = poke_types.keys()[1]
-        poke_pType = poke_types[1]['name']
+        poke_pType = poke_types.keys()[1]
+        # poke_pType = poke_types[1]['name']
     poke_lvl = lvl
 
     poke_cHP = cHP
@@ -308,17 +361,17 @@ def check_validity(lvl, cHP, ability, evs):
 
 
 # magic number - determining when we should switch
-SWITCH_THRESH = 0
+SWITCH_THRESH = 0.2
 
 
-def should_switch(att_poke, def_poke, att_moves, num_pokemon, def_move):
+def should_switch(att_poke, def_poke, att_moves, num_pokemon, def_dmg):
     """ Returns T/F depending of favorability of current matchup
         based on types of attacker and defender
 
         example - Charmander should switch out if against a Squirtle (rating of -0.25) 
                 - Charmander should not switch out against a Caterpie (rating of 0.375)
     """
-    if eval_matchup(att_poke, def_poke, att_moves, def_move) > SWITCH_THRESH and num_pokemon > 1:
+    if eval_matchup(att_poke, def_poke, att_moves, def_dmg) > SWITCH_THRESH and num_pokemon > 1:
         return True
     return False
 
@@ -341,7 +394,7 @@ def should_switch(att_poke, def_poke, att_moves, num_pokemon, def_move):
 
 
 
-def eval_matchup(att_poke, def_poke, att_moves, def_move):
+def eval_matchup(att_poke, def_poke, att_moves, def_dmg):
     """Return value depending on how good attacker is against the defender
         Notes:
             1 - great for attacker (we have a double super effective move, they can't hurt us)
@@ -383,23 +436,35 @@ def eval_matchup(att_poke, def_poke, att_moves, def_move):
 
     attack_rating = 0
 
-    # PUT THIS BACK ONCE WE CAN GET THE POKEMON'S MOVESSSS 
-    for move in att_moves:
-        if move.cat != "Status":
-            sample_attack = Attack(att_poke, def_poke, move)
-            effectiveness = sample_attack.find_damage()
-            if effectiveness > attack_rating:
-                attack_rating = effectiveness
+    # PUT THIS BACK ONCE WE CAN GET THE POKEMON'S MOVESSSS
+    moves = reverse_sort_moves(att_poke, def_poke, att_moves)
+    move_chosen = moves[0]
+    dmg = Attack(att_poke, def_poke, move_chosen).find_damage()
+    attack_rating = dmg
+    defense_rating = def_dmg
+    def_dmg_done = float(att_poke.cHP)/att_poke.mHP * 100 - float(att_poke.cHP-defense_rating)/att_poke.mHP * 100
+    if def_poke.spe > att_poke.spe and def_dmg_done > 100:
+        return -1
+    else:
+        return (attack_rating - defense_rating) / 4.0
+
+    # for move in att_moves:
+    #     if move.cat != "Status":
+    #         sample_attack = Attack(att_poke, def_poke, move)
+    #         effectiveness = sample_attack.find_damage()
+    #         if effectiveness > attack_rating:
+    #             attack_rating = effectiveness
     # temporary fix
     # attack_rating_p = Attack(att_poke, def_poke, Move('test', att_poke.pType))
     # attack_rating_s = Attack(att_poke, def_poke, Move('test', att_poke.sType))
     # attack_rating = (attack_rating_p.find_effectiveness() + attack_rating_s.find_effectiveness()) / 2.0
     #
     # # ideal 'defense ratings' are low - meaning the enemy does not do much damage
-    defense_strat = Attack(def_poke, att_poke, def_move)
-    defense_rating = defense_strat.find_damage()
+    # defense_strat = Attack(def_poke, att_poke, def_move)
+    # defense_rating = defense_strat.find_damage()
 
-    return (attack_rating - defense_rating) / 4.0
+
+
 
 
 # defaults
