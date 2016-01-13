@@ -1,5 +1,7 @@
 # PokePredictor
 
+Visit our webapp here: https://fathomless-gorge-9834.herokuapp.com/predictor/
+
 Purpose: E[Z]
 
 Our goal is to make a simple webapp that calculates the expected values of each of your possible moves in pokemon showdown. This includes
