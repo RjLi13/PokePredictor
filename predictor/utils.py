@@ -93,6 +93,15 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
     move4 = find_move_info(name, move4, move4_type, move4_category)
     moves = [move1, move2, move3, move4]
     moves = reverse_sort_moves(pokemon, opp_pokemon, moves)
+    """ The logic here is that first we get the status moves which will be in the rest of the list because all pokemon
+    sets logically speaking should have a move that deals damage in case of being taunted. Then we choose the highest
+    power move as move_chosen. However, usually, the highest power move has bad accuracy so we would want to choose
+    a less powerful move but can guareentee a hit. 85% chance of hitting is a good accuracy but it can't be a bad move
+    that deals almost no damage at all. That's why since the list is ranked from highest damage to lowest, the second
+    move is often in the list is often good enough to use. Status moves are often used in the beginning when you are
+    in a good position early in the game and you can't deal enough damage, and you aren't locked by choice item. Switch
+     is calculated first to check if we will be killed or not.
+    """
     status_moves = []
     for move in moves:
         if move.cat == 'Status':
@@ -119,7 +128,7 @@ def choose_move(name, lvl, cHP, nature, ability, opp_name, opp_cHP,
             return (status_moves[index].name, 0)
     return (move_chosen.name, dmg_done)
 
-
+#Highest power move will always be in front, the first element of list after sorted
 def reverse_sort_moves(pokemon, opp_pokemon, moves):
     unsorted = []
     dict = {}
@@ -255,8 +264,8 @@ def find_move_info(poke_name, move_name, move_type='Normal', move_category='Phys
         get_info = moves[move_name]
         # get_info = move['resource_uri']
         get_info = str(get_info)
-        strlen = len(get_info)
-        move_id = get_info[13:strlen-1]
+        str_len = len(get_info)
+        move_id = get_info[13:str_len-1]
         move_id = int(move_id)
         # print move_id
         # move_data = pykemon.get(move_id=move_id)
